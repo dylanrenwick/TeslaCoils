@@ -8,12 +8,12 @@
     },
     "variants": {
         "facing": {
-            "north": {},
-            "south": { "y": 180 },
-            "east":  { "y": 90 },
-            "west":  { "y": 270 },
-            "up":    { "x": 270 },
-            "down":  { "x": 90 }
+            "north": { "x": 270 },
+            "south": { "x": 90 },
+            "east":  { "z": 90 },
+            "west":  { "z": 270 },
+            "up":    { "x": 180 },
+            "down":  {}
         }
     }
 }
