@@ -23,7 +23,7 @@ public class CommonProxy
 	
 	public void init(FMLInitializationEvent e)
 	{
-		
+		this.modConfig.setupCrafting();
 	}
 	
 	public void postInit(FMLPostInitializationEvent e)

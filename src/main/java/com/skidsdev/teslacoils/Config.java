@@ -5,8 +5,11 @@ import java.io.File;
 import com.skidsdev.teslacoils.block.BlockRegister;
 import com.skidsdev.teslacoils.item.ItemRegister;
 
+import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.config.Configuration;
 import net.minecraftforge.common.config.Property;
+import net.minecraftforge.fml.common.registry.GameRegistry;
+import net.minecraftforge.oredict.ShapedOreRecipe;
 
 public class Config
 {
@@ -39,7 +42,21 @@ public class Config
 		
 	public void setupCrafting()
 	{
-		
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(ItemRegister.itemTuningTool),
+				" #=",
+				"#+#",
+				"+# ",
+				'=', "ingotSilver",
+				'#', "dustRedstone",
+				'+', "rodLead"));
+		GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BlockRegister.blockTeslaCoil, 2),
+				"#=#",
+				"#=#",
+				"+-+",
+				'#', "ingotCopper",
+				'=', "rodSilver",
+				'+', "plateLead",
+				'-', "dustRedstone"));
 	}
 	
 	private void processConfigFile()
