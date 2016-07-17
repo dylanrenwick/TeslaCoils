@@ -26,7 +26,7 @@ public abstract class BlockBaseCoil extends Block
 		super(Material.IRON);
 		this.setRegistryName(regName);
 		this.setUnlocalizedName(this.getRegistryName().toString());
-		this.setHardness(5.0f);
+		this.setHardness(1.5f);
 		this.setResistance(10.0f);
 		this.setCreativeTab(CreativeTabs.REDSTONE);
 	}
