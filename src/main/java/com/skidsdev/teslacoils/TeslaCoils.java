@@ -13,7 +13,8 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 @Mod(
 		modid = VersionInfo.ModId,
 		name = VersionInfo.ModName,
-		version = VersionInfo.Version
+		version = VersionInfo.Version,
+		dependencies = VersionInfo.Dependencies
 )
 public class TeslaCoils
 {
