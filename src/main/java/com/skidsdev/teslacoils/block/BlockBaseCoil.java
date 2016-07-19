@@ -152,11 +152,5 @@ public abstract class BlockBaseCoil extends Block
 	@Override
 	public boolean hasTileEntity(IBlockState state) { return true; }
 	
-	@Override
-	public TileEntity createTileEntity(World worldIn, IBlockState state)
-	{
-		return new TileEntityTeslaCoil();
-	}
-	
 	protected abstract void destroyBlock(World worldIn, BlockPos pos);
 }

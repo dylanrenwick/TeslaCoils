@@ -2,6 +2,8 @@ package com.skidsdev.teslacoils;
 
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;

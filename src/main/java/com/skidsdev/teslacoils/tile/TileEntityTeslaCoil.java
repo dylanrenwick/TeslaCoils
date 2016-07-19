@@ -52,7 +52,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 				if (dimID != worldObj.provider.getDimension()) return;
 				
 				int type = tag.getInteger("coiltype");
-				if (type != 0) return;
+				if (type == 1) return;
 				
 				int x = tag.getInteger("x");
 				int y = tag.getInteger("y");
@@ -144,6 +144,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
+		if (attachedTile == null) return false;
 		IBlockState state = worldObj.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.hasCapability(capability, face.getOpposite());
@@ -152,6 +153,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	{
+		if (attachedTile == null) return null;
 		IBlockState state = worldObj.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.getCapability(capability, face.getOpposite());
@@ -160,7 +162,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 	@Override
 	public void update()
 	{
-		if (attachedTile == null)
+		if (attachedTile == null || attachedTile.isInvalid())
 		{
 			getAttachedTile();
 		}

@@ -5,6 +5,8 @@ import com.skidsdev.teslacoils.client.render.items.ItemRenderRegister;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.tile.tesr.TESRTeslaCoil;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;

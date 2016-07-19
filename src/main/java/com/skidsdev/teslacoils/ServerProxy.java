@@ -1,8 +1,11 @@
 package com.skidsdev.teslacoils;
 
+import net.minecraft.client.gui.GuiErrorScreen;
+import net.minecraftforge.fml.client.FMLClientHandler;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import net.minecraftforge.fml.server.FMLServerHandler;
 
 public class ServerProxy extends CommonProxy
 {
