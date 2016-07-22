@@ -5,7 +5,7 @@ import net.minecraft.client.renderer.VertexBuffer;
 
 public class RenderHelper
 {
-    public static void drawBeam(Vector S, Vector E, Vector P, float width) {
+    public static void drawBeam(Vector S, Vector E, Vector P, float width, int a) {
         Vector PS = Sub(S, P);
         Vector SE = Sub(E, S);
 
@@ -18,20 +18,20 @@ public class RenderHelper
         Vector p3 = Add(E, half);
         Vector p4 = Sub(E, half);
 
-        drawQuad(Tessellator.getInstance(), p1, p3, p4, p2);
+        drawQuad(Tessellator.getInstance(), p1, p3, p4, p2, a);
     }
     
 
-    private static void drawQuad(Tessellator tessellator, Vector p1, Vector p2, Vector p3, Vector p4) {
+    private static void drawQuad(Tessellator tessellator, Vector p1, Vector p2, Vector p3, Vector p4, int a) {
         int brightness = 240;
         int b1 = brightness >> 16 & 65535;
         int b2 = brightness & 65535;
 
         VertexBuffer buffer = tessellator.getBuffer();
-        buffer.pos(p1.getX(), p1.getY(), p1.getZ()).tex(0.0D, 0.0D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p2.getX(), p2.getY(), p2.getZ()).tex(1.0D, 0.0D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p3.getX(), p3.getY(), p3.getZ()).tex(1.0D, 1.0D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
-        buffer.pos(p4.getX(), p4.getY(), p4.getZ()).tex(0.0D, 1.0D).lightmap(b1, b2).color(255, 255, 255, 128).endVertex();
+        buffer.pos(p1.getX(), p1.getY(), p1.getZ()).tex(0.0D, 0.0D).lightmap(b1, b2).color(255, 255, 255, a).endVertex();
+        buffer.pos(p2.getX(), p2.getY(), p2.getZ()).tex(1.0D, 0.0D).lightmap(b1, b2).color(255, 255, 255, a).endVertex();
+        buffer.pos(p3.getX(), p3.getY(), p3.getZ()).tex(1.0D, 1.0D).lightmap(b1, b2).color(255, 255, 255, a).endVertex();
+        buffer.pos(p4.getX(), p4.getY(), p4.getZ()).tex(0.0D, 1.0D).lightmap(b1, b2).color(255, 255, 255, a).endVertex();
     }
     
     public static class Vector {

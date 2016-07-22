@@ -2,6 +2,7 @@ package com.skidsdev.teslacoils.tile.tesr;
 
 import org.lwjgl.opengl.GL11;
 
+import com.skidsdev.teslacoils.tile.ITeslaCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.utils.RenderHelper;
 import com.skidsdev.teslacoils.utils.RenderHelper.Vector;
@@ -24,7 +25,7 @@ public class TESRTeslaCoil extends TileEntitySpecialRenderer<TileEntityTeslaCoil
 	{
 		ResourceLocation laser = new ResourceLocation(VersionInfo.ModId, "textures/particle/laser.png");
 		
-        if (te.connectedTiles != null && !te.connectedTiles.isEmpty())
+        if (te.connectedCoils != null && !te.connectedCoils.isEmpty())
         {
             GlStateManager.pushMatrix();
 
@@ -53,12 +54,16 @@ public class TESRTeslaCoil extends TileEntitySpecialRenderer<TileEntityTeslaCoil
 
             buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
             
-            for(TileEntityTeslaCoil tileEntity : te.connectedTiles)
+            for(ITeslaCoil tileEntity : te.connectedCoils)
             {
 	            BlockPos destination = new BlockPos(tileEntity.getPos());
 	            Vector end = new Vector(destination.getX() + .5f, destination.getY() + .5f, destination.getZ() + .5f);
-	
-	            RenderHelper.drawBeam(start, end, player, .1f);
+	            
+	            int a = 128;
+	            
+	            if (tileEntity instanceof TileEntityTeslaCoil) a = 64;
+	            
+	            RenderHelper.drawBeam(start, end, player, .1f, a);
             }
 
             tessellator.draw();

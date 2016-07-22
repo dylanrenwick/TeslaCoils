@@ -33,21 +33,94 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityTeslaCoil extends TileEntity implements ITickable
+public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITeslaCoil
 {
 	private static final int CHAT_ID = 47201173;
 	
-	public List<TileEntityTeslaCoil> connectedTiles;
+	public List<ITeslaCoil> connectedCoils;
 	public TileEntity attachedTile;
 	
 	@Nullable
 	private List<BlockPos> loadedTiles;
 	
+	private TeslaContainerCoil container;
+	
+	// Constructors
+	
 	public TileEntityTeslaCoil()
 	{
-		connectedTiles = new ArrayList<TileEntityTeslaCoil>();
+		connectedCoils = new ArrayList<ITeslaCoil>();
+		container = new TeslaContainerCoil(640);
 	}
 	
+	// Overrides
+	
+	@Override
+	public void readFromNBT(NBTTagCompound compound)
+	{
+		super.readFromNBT(compound);
+		if(compound.hasKey("Connections")) loadedTiles = deserializeConnections((NBTTagCompound)compound.getTag("Connections"));
+		if(compound.hasKey("TeslaContainer")) container = new TeslaContainerCoil(compound.getTag("TeslaContainer"));
+		connectedCoils = new ArrayList<ITeslaCoil>();
+	}
+	
+	@Override
+	public NBTTagCompound writeToNBT (NBTTagCompound compound)
+	{
+		if (connectedCoils != null && !connectedCoils.isEmpty())
+		{
+			compound.setTag("Connections", getConnectionNBT());
+		}
+		compound.setTag("TeslaContainer", container.serializeNBT());
+		return super.writeToNBT(compound);
+	}
+
+    @Override
+    public NBTTagCompound getUpdateTag()
+    {
+		NBTTagCompound tag = new NBTTagCompound();
+		writeToNBT(tag);
+        return tag;
+    }
+
+    @Override
+    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
+    {
+        return oldState.getBlock() != newState.getBlock();
+    }
+    
+	@Nullable
+	@Override
+	public SPacketUpdateTileEntity getUpdatePacket()
+	{
+	    return new SPacketUpdateTileEntity(this.pos, 0, getUpdateTag());
+	}
+	
+	@Override
+	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
+	{
+	    super.onDataPacket(net, packet);
+	    this.readFromNBT(packet.getNbtCompound());
+	}
+	
+	@Override
+	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	{
+		return (capability == TeslaCapabilities.CAPABILITY_CONSUMER ||
+			    capability == TeslaCapabilities.CAPABILITY_HOLDER);
+	}
+	
+	@Override
+	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	{
+		if(capability == TeslaCapabilities.CAPABILITY_CONSUMER ||
+		   capability == TeslaCapabilities.CAPABILITY_HOLDER)
+			return (T) container;
+		
+		return null;
+	}
+
+	@Override
 	public void onTuningToolUse(EntityPlayer player, ItemStack stack)
 	{
 		if (!player.isSneaking())
@@ -78,7 +151,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 					return;
 				}
 				
-				this.connectedTiles.add(newConnection);
+				this.connectedCoils.add(newConnection);
 				newConnection.addConnectedTile(this);
 				
 				this.markDirty();
@@ -100,76 +173,41 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 		}
 		else
 		{
-			if (connectedTiles != null) this.clearConnections();
+			if (connectedCoils != null) this.clearConnections();
 		}
 	}
-	
-	public void addConnectedTile(TileEntityTeslaCoil tileEntity)
+
+	@Override
+	public void disconnect(ITeslaCoil coil)
 	{
-		if(this.connectedTiles != null && !this.connectedTiles.contains(tileEntity))
+		if (connectedCoils.contains(coil))
 		{
-			this.connectedTiles.add(tileEntity);
+			connectedCoils.remove(coil);
 			this.markDirty();
 		}
 	}
-	
+
 	@Override
-	public void readFromNBT(NBTTagCompound compound)
+	public void addConnectedTile(ITeslaCoil coil)
 	{
-		super.readFromNBT(compound);
-		if (compound.hasKey("Connections")) loadedTiles = deserializeConnections((NBTTagCompound)compound.getTag("Connections"));
-		connectedTiles = new ArrayList<TileEntityTeslaCoil>();
-	}
-	
-	@Override
-	public NBTTagCompound writeToNBT (NBTTagCompound compound)
-	{
-		if (connectedTiles != null && !connectedTiles.isEmpty())
+		if(this.connectedCoils != null && !this.connectedCoils.contains(coil))
 		{
-			compound.setTag("Connections", getConnectionNBT());
+			connectedCoils.add(coil);
+			this.markDirty();
 		}
-		return super.writeToNBT(compound);
 	}
 
-    @Override
-    public NBTTagCompound getUpdateTag()
-    {
-		NBTTagCompound tag = new NBTTagCompound();
-		writeToNBT(tag);
-        return tag;
-    }
-
-    @Override
-    public boolean shouldRefresh(World world, BlockPos pos, IBlockState oldState, IBlockState newState)
-    {
-        return oldState.getBlock() != newState.getBlock();
-    }
-    
-	@Nullable
 	@Override
-	public SPacketUpdateTileEntity getUpdatePacket()
-	{
-	    return new SPacketUpdateTileEntity(this.pos, 0, getUpdateTag());
-	}
-	
-	@Override
-	public void onDataPacket (NetworkManager net, SPacketUpdateTileEntity packet)
-	{
-	    super.onDataPacket(net, packet);
-	    this.readFromNBT(packet.getNbtCompound());
-	}
-	
-	@Override
-	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
+	public boolean hasCoilCapability(Capability<?> capability, ITeslaCoil requester)
 	{
 		if (attachedTile == null) return false;
 		IBlockState state = worldObj.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.hasCapability(capability, face.getOpposite());
 	}
-	
+
 	@Override
-	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
+	public <T> T getCoilCapability(Capability<T> capability, ITeslaCoil requester)
 	{
 		if (attachedTile == null) return null;
 		IBlockState state = worldObj.getBlockState(pos);
@@ -178,78 +216,103 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 	}
 
 	@Override
+	public TileEntity getTileEntity()
+	{
+		return this;
+	}
+
+	@Override
+	public boolean validateCoil()
+	{
+		if(isInvalid()) return false;
+		
+		IBlockState state = worldObj.getBlockState(pos);
+		
+		if(state.getBlock() != BlockRegister.blockTeslaCoil) return false;
+		
+		if(!this.hasValidAttachedTile()) return false;
+		
+		return true;
+	}
+
+	@Override
 	public void update()
 	{
-		if (attachedTile == null || attachedTile.isInvalid())
+		if(this.attachedTile == null || this.attachedTile.isInvalid())
 		{
 			getAttachedTile();
 		}
-		
-		if (connectedTiles != null)
+		else
 		{
-			validateConnections();
-			
-			IBlockState state = worldObj.getBlockState(pos);
-			EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
-			
-			ITeslaHolder holder = attachedTile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, facing.getOpposite()); 
+			if(connectedCoils != null && !connectedCoils.isEmpty())
+			{
+				validateConnections();
+				
+				if(container.getStoredPower() > 0)
+				{
+					List<ITeslaConsumer> connectedConsumers = new ArrayList<ITeslaConsumer>();
+					for(ITeslaCoil coil : connectedCoils)
+					{
+						if (coil.hasCoilCapability(TeslaCapabilities.CAPABILITY_CONSUMER, this))
+						{
+							connectedConsumers.add(coil.getCoilCapability(TeslaCapabilities.CAPABILITY_CONSUMER, this));
+						}
+					}
 					
-			if (hasConnectedCapability(TeslaCapabilities.CAPABILITY_CONSUMER) && 
-					attachedTile.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, facing.getOpposite()) && 
-					holder.getStoredPower() > 0)
-			{
-				List<ITeslaConsumer> consumers = getConnectedCapabilities(TeslaCapabilities.CAPABILITY_CONSUMER);
-				ITeslaProducer producer = attachedTile.getCapability(TeslaCapabilities.CAPABILITY_PRODUCER, facing.getOpposite());
-				
-				for(ITeslaConsumer consumer : consumers)
-				{
-					producer.takePower(consumer.givePower(producer.takePower(Config.teslaCoilTransferRate, true), false), false);
-				}
-				
-				updateConnectedBlocks();
-			}
-		}
-		if (loadedTiles != null)
-		{
-			connectedTiles = new ArrayList<TileEntityTeslaCoil>();
-			
-			for(BlockPos loadedPos : loadedTiles)
-			{
-				TileEntity tileEntity = worldObj.getTileEntity(loadedPos);
-				
-				if (tileEntity != null && tileEntity instanceof TileEntityTeslaCoil)
-				{
-					connectedTiles.add((TileEntityTeslaCoil)tileEntity);
+					if (!connectedConsumers.isEmpty())
+					{
+						for(int i = 0; i < connectedConsumers.size() && container.getStoredPower() > 0; i++)
+						{
+							container.takePower(connectedConsumers.get(i).givePower(container.takePower(20, true), false), false);
+						}
+					}
 				}
 			}
-			
-			loadedTiles = null;
+			if(loadedTiles != null)
+			{
+				connectedCoils = new ArrayList<ITeslaCoil>();
+				
+				for(BlockPos loadedPos : loadedTiles)
+				{
+					TileEntity tileEntity = worldObj.getTileEntity(loadedPos);
+					
+					if (tileEntity != null && tileEntity instanceof ITeslaCoil)
+					{
+						connectedCoils.add((ITeslaCoil)tileEntity);
+					}
+				}
+				
+				loadedTiles = null;
+			}
 		}
 	}
 	
-	public void updateBlock()
-	{
-		IBlockState state = worldObj.getBlockState(pos);
-		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
-		BlockPos attachedPos = pos.offset(facing);
-		this.worldObj.markBlockRangeForRenderUpdate(pos, attachedPos);
-	}
-	
-	public void disconnect(TileEntityTeslaCoil tileEntity)
-	{
-		if (connectedTiles.contains(tileEntity))
-		{
-			connectedTiles.remove(tileEntity);
-			this.markDirty();
-		}
-	}
+	// Public Methods
 	
 	public void destroyTile()
 	{
-		clearConnections();
+		this.clearConnections();
 	}
 	
-	public boolean hasValidAttachedTile()
+	// Private Methods
+	
+	private void validateConnections()
+	{
+		while(connectedCoils.remove(null)) { }
+		
+		List<ITeslaCoil> temp = new ArrayList<ITeslaCoil>(connectedCoils);
+		
+		for(ITeslaCoil coil : temp)
+		{
+			if(!coil.validateCoil())
+			{
+				this.disconnect(coil);
+				coil.disconnect(this);
+			}
+		}
+	}
+	
+	private boolean hasValidAttachedTile()
 	{
 		if (attachedTile == null)
 		{
@@ -260,13 +323,36 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 		return true;
 	}
 	
+	private void getAttachedTile()
+	{
+		IBlockState state = worldObj.getBlockState(pos);
+		if (state.getBlock() != BlockRegister.blockTeslaCoil) return;
+		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
+		BlockPos attachedPos = pos.offset(facing);
+		
+		TileEntity te = worldObj.getTileEntity(attachedPos);
+		
+		if (te != null && !te.isInvalid()) attachedTile = te;
+	}
+	
+	private void clearConnections()
+	{
+		List<ITeslaCoil> temp = new ArrayList<ITeslaCoil>(connectedCoils);
+		
+		for(ITeslaCoil connectedCoil : connectedCoils)
+		{
+			connectedCoil.disconnect(this);
+			this.disconnect(connectedCoil);
+		}
+	}
+	
 	private NBTTagCompound getConnectionNBT()
 	{
 		NBTTagCompound tag = new NBTTagCompound();
 		
-		for(int i = 0; i < connectedTiles.size(); i++)
+		for(int i = 0; i < connectedCoils.size(); i++)
 		{
-			BlockPos connectionPos = connectedTiles.get(i).getPos();
+			BlockPos connectionPos = connectedCoils.get(i).getPos();
 			tag.setLong("Connection" + i, connectionPos.toLong());
 		}
 		
@@ -287,95 +373,14 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 		}
 		
 		return connections;
-	}
-	
-	private void getAttachedTile()
-	{
-		IBlockState state = worldObj.getBlockState(pos);
-		if (state.getBlock() != BlockRegister.blockTeslaCoil) return;
-		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
-		BlockPos attachedPos = pos.offset(facing);
-		
-		TileEntity te = worldObj.getTileEntity(attachedPos);
-		
-		if (te != null && !te.isInvalid()) attachedTile = te;
-	}
-	
-	private void validateConnections()
-	{
-		while(connectedTiles.remove(null)) { }
-		
-		List<TileEntityTeslaCoil> temp = new ArrayList<TileEntityTeslaCoil>(connectedTiles);
-		
-		for(TileEntityTeslaCoil tileEntity : temp)
-		{
-			IBlockState state = worldObj.getBlockState(tileEntity.getPos());
-			
-			if (state.getBlock() != BlockRegister.blockTeslaCoil)
-			{
-				disconnect(tileEntity);
-				continue;
-			}
-			
-			if (!tileEntity.hasValidAttachedTile())
-			{
-				disconnect(tileEntity);
-				continue;
-			}
-		}
-	}
-	
-	private boolean hasConnectedCapability(Capability<?> capability)
-	{		
-		for(TileEntityTeslaCoil tileEntity : connectedTiles)
-		{
-			if (tileEntity.hasCapability(capability, null)) return true;
-		}
-		
-		return false;
-	}
-	private <T> List<T> getConnectedCapabilities(Capability<T> capability)
-	{
-		List<T> connectedCaps = new ArrayList<T>();
-		
-		for(TileEntityTeslaCoil tileEntity : connectedTiles)
-		{
-			if (tileEntity.hasCapability(capability, null))
-			{
-				connectedCaps.add(tileEntity.getCapability(capability, null));
-			}
-		}
-		
-		return connectedCaps;
-	}
-	private void updateConnectedBlocks()
-	{
-		for(TileEntityTeslaCoil tileEntity : connectedTiles)
-		{
-			tileEntity.updateBlock();
-		}
-	}
-	private void terminateConnection(TileEntityTeslaCoil tileEntity)
-	{
-		if (connectedTiles.contains(tileEntity)) connectedTiles.remove(tileEntity);
-		tileEntity.disconnect(this);
-	}
-	private void clearConnections()
-	{
-		List<TileEntityTeslaCoil> temp = new ArrayList<TileEntityTeslaCoil>(connectedTiles);
-		
-		for(TileEntityTeslaCoil tileEntity : temp)
-		{
-			terminateConnection(tileEntity);
-		}
-		
-		this.markDirty();
-	}
+}
 	
 	private void throwToolNBTError(EntityPlayer player, String details)
 	{
 		sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
 	}
+	
+	// Static Methods
 	
     @SideOnly(Side.CLIENT)
     private static void sendSpamlessMessage (int messageID, ITextComponent message)

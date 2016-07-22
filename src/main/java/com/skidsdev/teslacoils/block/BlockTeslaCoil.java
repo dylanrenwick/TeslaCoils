@@ -39,17 +39,10 @@ public class BlockTeslaCoil extends BlockBaseCoil
 	{
 		return new TileEntityTeslaCoil();
 	}
-	
+
 	@Override
 	protected void destroyBlock(World worldIn, BlockPos pos)
 	{
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
 		
-		if (tileEntity != null && tileEntity instanceof TileEntityTeslaCoil)
-		{
-			TileEntityTeslaCoil coilEntity = (TileEntityTeslaCoil)tileEntity;
-			
-			coilEntity.destroyTile();
-		}
 	}
 }

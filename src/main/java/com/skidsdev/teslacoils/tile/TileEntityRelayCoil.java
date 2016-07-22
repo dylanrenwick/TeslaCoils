@@ -56,7 +56,7 @@ public class TileEntityRelayCoil extends TileEntity
 		}
 		else
 		{
-			//if (connectedTiles != null) this.clearConnections();
+			//if (firstConnection != null || secondConnection != null) this.clearConnections();
 		}
 	}
 	
