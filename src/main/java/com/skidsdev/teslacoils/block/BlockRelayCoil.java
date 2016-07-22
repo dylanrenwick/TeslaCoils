@@ -1,5 +1,8 @@
 package com.skidsdev.teslacoils.block;
 
+import com.skidsdev.teslacoils.tile.TileEntityRelayCoil;
+
+import net.minecraft.block.state.IBlockState;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -12,9 +15,9 @@ public class BlockRelayCoil extends BlockBaseCoil
 	}
 	
 	@Override
-	public TileEntity createTileEntity(World worldIn, BlockPos pos)
+	public TileEntity createTileEntity(World worldIn, IBlockState state)
 	{
-		
+		return new TileEntityRelayCoil();
 	}
 
 	@Override

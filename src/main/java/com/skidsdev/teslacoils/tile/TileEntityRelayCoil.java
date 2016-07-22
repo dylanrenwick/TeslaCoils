@@ -33,8 +33,9 @@ public class TileEntityRelayCoil extends TileEntity
 				
 				TileEntityTeslaCoil newConnection = (TileEntityTeslaCoil)this.worldObj.getTileEntity(new BlockPos(x, y, z));
 				
-				this.connectedTiles.add(newConnection);
-				newConnection.addConnectedTile(this);
+				if (firstConnection == null) firstConnection = newConnection;
+				else if (secondConnection == null) secondConnection = newConnection;
+				else return;
 				
 				this.markDirty();
 				
@@ -55,7 +56,27 @@ public class TileEntityRelayCoil extends TileEntity
 		}
 		else
 		{
-			if (connectedTiles != null) this.clearConnections();
+			//if (connectedTiles != null) this.clearConnections();
 		}
 	}
+	
+	/*public void disconnect(TileEntityTeslaCoil tileEntity)
+	{
+		if (connectedTiles.contains(tileEntity))
+		{
+			connectedTiles.remove(tileEntity);
+			this.markDirty();
+		}
+	}
+	
+	private void terminateConnection(TileEntityTeslaCoil tileEntity)
+	{
+		if (connectedTiles.contains(tileEntity)) connectedTiles.remove(tileEntity);
+		tileEntity.disconnect(this);
+	}
+	
+	private void clearConnections()
+	{
+		
+	}*/
 }

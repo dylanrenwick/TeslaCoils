@@ -67,8 +67,7 @@ dependencies {
     // http://www.gradle.org/docs/current/userguide/artifact_dependencies_tutorial.html
     // http://www.gradle.org/docs/current/userguide/dependency_management.html
     
-    compile "net.darkhax.tesla:Tesla:1.9.4-1.1.0.24"
-    compile files("libs/BaseMetals_1.9.4-2.3.2.6.jar")
+    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.0.34"
 }
 
 processResources

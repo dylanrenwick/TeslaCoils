@@ -280,7 +280,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 		
 		TileEntity te = worldObj.getTileEntity(attachedPos);
 		
-		if (te != null) attachedTile = te;
+		if (te != null && !te.isInvalid()) attachedTile = te;
 	}
 	
 	private void validateConnections()
