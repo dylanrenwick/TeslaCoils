@@ -15,6 +15,8 @@ import net.darkhax.tesla.api.ITeslaHolder;
 import net.darkhax.tesla.api.ITeslaProducer;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -24,11 +26,17 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class TileEntityTeslaCoil extends TileEntity implements ITickable
 {
+	private static final int CHAT_ID = 47201173;
+	
 	public List<TileEntityTeslaCoil> connectedTiles;
 	public TileEntity attachedTile;
 	
@@ -52,13 +60,23 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 				if (dimID != worldObj.provider.getDimension()) return;
 				
 				int type = tag.getInteger("coiltype");
-				if (type == 1) return;
+				if (type == 2) return;
+				if (type == 0)
+				{
+					throwToolNBTError(player, "Invalid coiltype NBT tag in Tuning Tool, connection not formed!");
+					return;
+				}
 				
 				int x = tag.getInteger("x");
 				int y = tag.getInteger("y");
 				int z = tag.getInteger("z");
 				
 				TileEntityTeslaCoil newConnection = (TileEntityTeslaCoil)this.worldObj.getTileEntity(new BlockPos(x, y, z));
+				if (newConnection == null)
+				{
+					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
+					return;
+				}
 				
 				this.connectedTiles.add(newConnection);
 				newConnection.addConnectedTile(this);
@@ -75,7 +93,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 				tag.setInteger("y", this.pos.getY());
 				tag.setInteger("z", this.pos.getZ());
 				tag.setInteger("world", worldObj.provider.getDimension());
-				tag.setInteger("coiltype", 0);
+				tag.setInteger("coiltype", 1);
 				
 				ItemNBTHelper.setCompound(stack, "StartPos", tag);
 			}
@@ -353,4 +371,16 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable
 		
 		this.markDirty();
 	}
+	
+	private void throwToolNBTError(EntityPlayer player, String details)
+	{
+		sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
+	}
+	
+    @SideOnly(Side.CLIENT)
+    private static void sendSpamlessMessage (int messageID, ITextComponent message)
+    {        
+        final GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+        chat.printChatMessageWithOptionalDeletion(message, messageID);
+    }
 }
