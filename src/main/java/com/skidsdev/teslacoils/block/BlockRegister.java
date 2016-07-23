@@ -12,6 +12,7 @@ import net.minecraftforge.fml.common.registry.GameRegistry;
 public class BlockRegister
 {
 	public static Block blockTeslaCoil;
+	public static Block blockRelayCoil;
 	public static Block blockTeslarract;
 	
 	public static List<Block> registeredBlocks;
@@ -20,9 +21,14 @@ public class BlockRegister
 	{
 		registeredBlocks = new ArrayList<Block>();
 		
-		Block x;
-		blockTeslaCoil  = registerBlock(x = new BlockTeslaCoil(),  new ItemBlockTeslaCoil(x));
-		blockTeslarract = registerBlock(x = new BlockTeslarract(), new ItemBlockTeslaCoil(x));
+		blockTeslaCoil  = registerCoil(new BlockTeslaCoil());
+		blockRelayCoil  = registerBlock(new BlockRelayCoil());
+		blockTeslarract = registerCoil(new BlockTeslarract());
+	}
+	
+	private static Block registerCoil(Block block)
+	{
+		return registerBlock(block, new ItemBlockTeslaCoil(block));
 	}
 	
 	private static Block registerBlock(Block block)

@@ -2,11 +2,11 @@ package com.skidsdev.teslacoils;
 
 import com.skidsdev.teslacoils.client.render.blocks.BlockRenderRegister;
 import com.skidsdev.teslacoils.client.render.items.ItemRenderRegister;
+import com.skidsdev.teslacoils.tile.TileEntityRelayCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
+import com.skidsdev.teslacoils.tile.tesr.TESRRelayCoil;
 import com.skidsdev.teslacoils.tile.tesr.TESRTeslaCoil;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiErrorScreen;
 import net.minecraftforge.fml.client.registry.ClientRegistry;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -29,6 +29,7 @@ public class ClientProxy extends CommonProxy
 		super.init(e);
 		
 		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityTeslaCoil.class, new TESRTeslaCoil());
+		ClientRegistry.bindTileEntitySpecialRenderer(TileEntityRelayCoil.class, new TESRRelayCoil());
 	}
 	
 	@Override

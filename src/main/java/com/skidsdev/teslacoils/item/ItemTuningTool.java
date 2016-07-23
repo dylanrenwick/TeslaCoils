@@ -1,6 +1,7 @@
 package com.skidsdev.teslacoils.item;
 
 import com.skidsdev.teslacoils.block.BlockRegister;
+import com.skidsdev.teslacoils.tile.TileEntityRelayCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslarract;
 
@@ -46,23 +47,26 @@ public class ItemTuningTool extends Item
 		IBlockState state = worldIn.getBlockState(pos);
 		Block type = state.getBlock();
 		
-		if (state.getBlock() == BlockRegister.blockTeslaCoil)
+		if (type == BlockRegister.blockTeslaCoil)
 		{
 			TileEntity tileEntity = worldIn.getTileEntity(pos);
 			
-			if (tileEntity != null)
-			{
-				if (type == BlockRegister.blockTeslaCoil)
-				{
-					TileEntityTeslaCoil coilEntity = (TileEntityTeslaCoil)tileEntity;
-					coilEntity.onTuningToolUse(player, stack);
-				}
-				else if (type == BlockRegister.blockTeslarract)
-				{
-					TileEntityTeslarract coilEntity = (TileEntityTeslarract)tileEntity;
-					coilEntity.onTuningToolUse(player, stack);
-				}			
-			}
+			TileEntityTeslaCoil coilEntity = (TileEntityTeslaCoil)tileEntity;
+			coilEntity.onTuningToolUse(player, stack);
+		}
+		else if (type == BlockRegister.blockRelayCoil)
+		{
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			
+			TileEntityRelayCoil coilEntity = (TileEntityRelayCoil)tileEntity;
+			coilEntity.onTuningToolUse(player, stack);
+		}
+		else if (type == BlockRegister.blockTeslarract)
+		{
+			TileEntity tileEntity = worldIn.getTileEntity(pos);
+			
+			TileEntityTeslarract coilEntity = (TileEntityTeslarract)tileEntity;
+			coilEntity.onTuningToolUse(player, stack);
 		}
 		else
 		{

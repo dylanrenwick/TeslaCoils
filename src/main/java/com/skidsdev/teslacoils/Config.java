@@ -84,6 +84,13 @@ public class Config
 					'=', "rodSilver",
 					'+', "plateLead",
 					'-', "dustRedstone"));
+			GameRegistry.addRecipe(new ShapedOreRecipe(new ItemStack(BlockRegister.blockRelayCoil, 2),
+					"#=#",
+					" = ",
+					"+++",
+					'#', "ingotCopper",
+					'=', "rodSilver",
+					'+', "plateLead"));
 		}
 		else
 		{
@@ -95,6 +102,13 @@ public class Config
 					'#', Items.REDSTONE,
 					'+', Items.IRON_INGOT,
 					'-', Items.GOLD_INGOT);
+			GameRegistry.addRecipe(new ItemStack(BlockRegister.blockRelayCoil, 2),
+					"#=#",
+					" = ",
+					"+++",
+					'#', Items.REDSTONE,
+					'=', Items.STICK,
+					'+', Items.IRON_INGOT);
 		}
 	}
 	

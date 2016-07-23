@@ -42,8 +42,8 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	@Nullable
 	private List<BlockPos> loadedTiles;
-	
 	private TeslaContainerCoil container;
+	private long transferRate;
 	
 	// Constructors
 	
@@ -51,6 +51,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	{
 		connectedCoils = new ArrayList<ITeslaCoil>();
 		container = new TeslaContainerCoil(640);
+		transferRate = Config.teslaCoilTransferRate;
 	}
 	
 	// Overrides
@@ -141,18 +142,43 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 				}
 				
 				int x = tag.getInteger("x");
-				int y = tag.getInteger("y");
-				int z = tag.getInteger("z");
+				int xDif = pos.getX() - x;
+				if (xDif > 16 || xDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
 				
-				TileEntityTeslaCoil newConnection = (TileEntityTeslaCoil)this.worldObj.getTileEntity(new BlockPos(x, y, z));
-				if (newConnection == null)
+				int y = tag.getInteger("y");
+				int yDif = pos.getY() - y;
+				if (yDif > 16 || yDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
+				
+				int z = tag.getInteger("z");
+				int zDif = pos.getZ() - z;
+				if (zDif > 16 || zDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
+				
+				TileEntity newConnection = this.worldObj.getTileEntity(new BlockPos(x, y, z));
+				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
 				{
 					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
 					return;
 				}
+				if (newConnection == this)
+				{
+					throwToolNBTError(player, "You can't connect a Tesla Coil to itself!");
+					return;
+				}
 				
-				this.connectedCoils.add(newConnection);
-				newConnection.addConnectedTile(this);
+				this.connectedCoils.add((ITeslaCoil)newConnection);
+				((ITeslaCoil)newConnection).addConnectedTile(this);
 				
 				this.markDirty();
 				
@@ -263,7 +289,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 					{
 						for(int i = 0; i < connectedConsumers.size() && container.getStoredPower() > 0; i++)
 						{
-							container.takePower(connectedConsumers.get(i).givePower(container.takePower(20, true), false), false);
+							container.takePower(connectedConsumers.get(i).givePower(container.takePower(transferRate, true), false), false);
 						}
 					}
 				}
@@ -339,7 +365,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	{
 		List<ITeslaCoil> temp = new ArrayList<ITeslaCoil>(connectedCoils);
 		
-		for(ITeslaCoil connectedCoil : connectedCoils)
+		for(ITeslaCoil connectedCoil : temp)
 		{
 			connectedCoil.disconnect(this);
 			this.disconnect(connectedCoil);
@@ -358,6 +384,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		
 		return tag;
 	}
+	
 	private List<BlockPos> deserializeConnections(NBTTagCompound tag)
 	{
 		List<BlockPos> connections = new ArrayList<BlockPos>();
@@ -377,7 +404,8 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	private void throwToolNBTError(EntityPlayer player, String details)
 	{
-		sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
+		if (worldObj.isRemote)
+			sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
 	}
 	
 	// Static Methods
