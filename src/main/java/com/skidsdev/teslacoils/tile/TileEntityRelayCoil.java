@@ -286,6 +286,12 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		}
 	}
 	
+	@Override
+	public BlockPos getPos()
+	{
+		return this.pos;
+	}
+	
 	private void throwToolNBTError(EntityPlayer player, String details)
 	{
 		if (worldObj.isRemote)

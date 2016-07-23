@@ -313,6 +313,12 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		}
 	}
 	
+	@Override
+	public BlockPos getPos()
+	{
+		return this.pos;
+	}
+	
 	// Public Methods
 	
 	public void destroyTile()
