@@ -20,17 +20,4 @@ public class BlockTeslarract extends BlockBaseCoil
 	{
 		return new TileEntityTeslarract();
 	}
-	
-	@Override
-	protected void destroyBlock(World worldIn, BlockPos pos)
-	{
-		TileEntity tileEntity = worldIn.getTileEntity(pos);
-		
-		if (tileEntity != null && tileEntity instanceof TileEntityTeslarract)
-		{
-			TileEntityTeslarract coilEntity = (TileEntityTeslarract)tileEntity;
-			
-			coilEntity.destroyTile();
-		}
-	}
 }

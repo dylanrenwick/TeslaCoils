@@ -19,10 +19,4 @@ public class BlockRelayCoil extends BlockBaseCoil
 	{
 		return new TileEntityRelayCoil();
 	}
-
-	@Override
-	protected void destroyBlock(World worldIn, BlockPos pos)
-	{
-		
-	}
 }

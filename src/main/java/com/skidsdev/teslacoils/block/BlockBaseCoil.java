@@ -32,18 +32,6 @@ public abstract class BlockBaseCoil extends Block
 	}
 	
 	@Override
-	public void onBlockDestroyedByExplosion(World worldIn, BlockPos pos, Explosion explosion)
-	{
-		this.destroyBlock(worldIn, pos);
-	}
-	
-	@Override
-	public void onBlockDestroyedByPlayer(World worldIn, BlockPos pos, IBlockState state)
-	{
-		this.destroyBlock(worldIn, pos);
-	}
-	
-	@Override
 	public BlockStateContainer createBlockState()
 	{
 		return new BlockStateContainer(this, FACING);
@@ -151,6 +139,4 @@ public abstract class BlockBaseCoil extends Block
 	
 	@Override
 	public boolean hasTileEntity(IBlockState state) { return true; }
-	
-	protected abstract void destroyBlock(World worldIn, BlockPos pos);
 }

@@ -2,6 +2,7 @@ package com.skidsdev.teslacoils.block;
 
 import java.util.List;
 
+import com.skidsdev.teslacoils.Config;
 import com.skidsdev.teslacoils.item.ItemRegister;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslarract;
@@ -29,20 +30,45 @@ import net.minecraft.world.World;
 
 public class BlockTeslaCoil extends BlockBaseCoil
 {
+	private static final PropertyEnum COIL_TIER = PropertyEnum.create("tier", EnumCoilTier.class);
+	
 	public BlockTeslaCoil()
 	{
 		super("blockTeslaCoil");
+		this.setDefaultState(blockState.getBaseState().withProperty(COIL_TIER, EnumCoilTier.BASIC));
 	}
 	
 	@Override
 	public TileEntity createTileEntity(World worldIn, IBlockState state)
 	{
-		return new TileEntityTeslaCoil();
+		return new TileEntityTeslaCoil(((EnumCoilTier)state.getValue(COIL_TIER)).getTransferRate());
 	}
-
-	@Override
-	protected void destroyBlock(World worldIn, BlockPos pos)
+	
+	private enum EnumCoilTier implements IStringSerializable
 	{
+		BASIC("basic", Config.teslaCoilTransferRate),
+		ADVANCED("advanced", Config.teslaCoilTransferRate * 4),
+		INDUSTRIAL("industrial", Config.teslaCoilTransferRate * 4 * 4),
+		CREATIVE("creative", Long.MAX_VALUE);
 		
+		private long transferRate;
+		private String name;
+		
+		private EnumCoilTier(String name, long transferRate)
+		{
+			this.name = name;
+			this.transferRate = transferRate;
+		}
+
+		@Override
+		public String getName()
+		{
+			return name;
+		}
+		
+		public long getTransferRate()
+		{
+			return transferRate;
+		}
 	}
 }

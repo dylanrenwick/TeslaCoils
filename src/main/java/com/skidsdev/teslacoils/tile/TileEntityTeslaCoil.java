@@ -47,11 +47,11 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	// Constructors
 	
-	public TileEntityTeslaCoil()
+	public TileEntityTeslaCoil(long transferRate)
 	{
 		connectedCoils = new ArrayList<ITeslaCoil>();
 		container = new TeslaContainerCoil(640);
-		transferRate = Config.teslaCoilTransferRate;
+		this.transferRate = transferRate;
 	}
 	
 	// Overrides
