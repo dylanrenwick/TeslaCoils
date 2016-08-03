@@ -1,5 +1,8 @@
 package com.skidsdev.teslacoils.item;
 
+import com.skidsdev.teslacoils.block.BlockTeslaCoil.EnumCoilTier;
+import com.skidsdev.teslacoils.utils.ItemNBTHelper;
+
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.EntityPlayer;
@@ -27,6 +30,13 @@ public class ItemBlockTeslaCoil extends ItemBlock
 			return true;
 		}
 		else return false;
+	}
+	
+	@Override
+	public String getUnlocalizedName(ItemStack stack)
+	{
+		EnumCoilTier tier = EnumCoilTier.values()[ItemNBTHelper.getInt(stack, "CoilTier", 0)];
+		return super.getUnlocalizedName() + "_" + tier.getName();
 	}
 	
 	private boolean hasValidTileEntity(World worldIn, BlockPos pos, EnumFacing facing)

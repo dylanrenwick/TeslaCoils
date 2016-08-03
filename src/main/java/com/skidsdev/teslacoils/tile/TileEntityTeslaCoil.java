@@ -50,7 +50,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public TileEntityTeslaCoil(long transferRate)
 	{
 		connectedCoils = new ArrayList<ITeslaCoil>();
-		container = new TeslaContainerCoil(640);
+		container = new TeslaContainerCoil(transferRate);
 		this.transferRate = transferRate;
 	}
 	
@@ -324,6 +324,11 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public void destroyTile()
 	{
 		this.clearConnections();
+	}
+	
+	public long getTransferRate()
+	{
+		return this.transferRate;
 	}
 	
 	// Private Methods

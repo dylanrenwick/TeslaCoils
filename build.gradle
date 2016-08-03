@@ -20,7 +20,7 @@ group= "com.skidsdev.teslacoils"
 archivesBaseName = "teslacoils"
 
 minecraft {
-    version = "1.10.2-12.18.1.2014"
+    version = "1.10.2-12.18.1.2043"
     runDir = "run"
     
     mappings = "snapshot_20160518"
@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     
-    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.0.38"
+    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.41"
 }
 
 processResources

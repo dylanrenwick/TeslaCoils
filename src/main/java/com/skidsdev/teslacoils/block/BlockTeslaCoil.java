@@ -6,6 +6,7 @@ import com.skidsdev.teslacoils.Config;
 import com.skidsdev.teslacoils.item.ItemRegister;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslarract;
+import com.skidsdev.teslacoils.utils.ItemNBTHelper;
 
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.Block;
@@ -44,7 +45,43 @@ public class BlockTeslaCoil extends BlockBaseCoil
 		return new TileEntityTeslaCoil(((EnumCoilTier)state.getValue(COIL_TIER)).getTransferRate());
 	}
 	
-	private enum EnumCoilTier implements IStringSerializable
+	@Override
+	public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list)
+	{
+		for(EnumCoilTier tier : EnumCoilTier.values())
+		{
+			ItemStack stack = new ItemStack(item, 1, 0);
+			ItemNBTHelper.setInt(stack, "CoilType", tier.ordinal());
+			list.add(stack);
+		}
+	}
+	
+	@Override
+	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
+	{
+		long rate = EnumCoilTier.BASIC.getTransferRate();
+		TileEntity tileEntity = worldIn.getTileEntity(pos);
+		if (tileEntity != null && tileEntity instanceof TileEntityTeslaCoil)
+		{
+			rate = ((TileEntityTeslaCoil)tileEntity).getTransferRate();
+		}
+		EnumCoilTier tier = EnumCoilTier.getTierFromTransferRate(rate);
+		return state.withProperty(COIL_TIER, tier != null ? tier : EnumCoilTier.BASIC);
+	}
+	
+	@Override
+	public BlockStateContainer createBlockState()
+	{
+		return new BlockStateContainer(this, FACING, COIL_TIER);
+	}
+	
+	@Override
+	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	{
+		return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
+	}
+	
+	public enum EnumCoilTier implements IStringSerializable
 	{
 		BASIC("basic", Config.teslaCoilTransferRate),
 		ADVANCED("advanced", Config.teslaCoilTransferRate * 4),
@@ -69,6 +106,16 @@ public class BlockTeslaCoil extends BlockBaseCoil
 		public long getTransferRate()
 		{
 			return transferRate;
+		}
+		
+		public static EnumCoilTier getTierFromTransferRate(long rate)
+		{
+			for(EnumCoilTier tier : EnumCoilTier.values())
+			{
+				if (tier.getTransferRate() == rate) return tier;
+			}
+			
+			return null;
 		}
 	}
 }

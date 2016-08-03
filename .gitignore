@@ -29,3 +29,4 @@ asm
 Thumbs.db
 
 libs/
+*.launch
