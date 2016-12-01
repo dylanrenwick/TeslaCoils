@@ -230,12 +230,12 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		
 		if (firstConnection != null)
 		{
-			BlockPos connectionPos = firstConnection.getPos();
+			BlockPos connectionPos = firstConnection.getCoilPos();
 			tag.setLong("FirstConnection", connectionPos.toLong());
 		}
 		if (secondConnection != null)
 		{
-			BlockPos connectionPos = secondConnection.getPos();
+			BlockPos connectionPos = secondConnection.getCoilPos();
 			tag.setLong("SecondConnection", connectionPos.toLong());
 		}
 		
@@ -287,7 +287,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	}
 	
 	@Override
-	public BlockPos getPos()
+	public BlockPos getCoilPos()
 	{
 		return this.pos;
 	}
