@@ -51,7 +51,7 @@ public class BlockTeslaCoil extends BlockBaseCoil
 		for(EnumCoilTier tier : EnumCoilTier.values())
 		{
 			ItemStack stack = new ItemStack(item, 1, 0);
-			ItemNBTHelper.setInt(stack, "CoilType", tier.ordinal());
+			ItemNBTHelper.setInt(stack, "CoilTier", tier.ordinal());
 			list.add(stack);
 		}
 	}
