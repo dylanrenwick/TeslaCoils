@@ -42,7 +42,7 @@ public class BlockTeslaCoil extends BlockBaseCoil
 	@Override
 	public TileEntity createTileEntity(World worldIn, IBlockState state)
 	{
-		return new TileEntityTeslaCoil(((EnumCoilTier)state.getValue(COIL_TIER)).getTransferRate());
+		return new TileEntityTeslaCoil(((EnumCoilTier)state.getValue(COIL_TIER)));
 	}
 	
 	@Override
