@@ -43,15 +43,18 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	@Nullable
 	private List<BlockPos> loadedTiles;
 	private TeslaContainerCoil container;
-	private long transferRate;
+	private BlockTeslaCoil.EnumCoilTier tier = BlockTeslaCoil.EnumCoilTier.BASIC;
 	
 	// Constructors
 	
-	public TileEntityTeslaCoil(long transferRate)
+	public TileEntityTeslaCoil()
+	{}
+	
+	public TileEntityTeslaCoil(BlockTeslaCoil.EnumCoilTier tier)
 	{
 		connectedCoils = new ArrayList<ITeslaCoil>();
-		container = new TeslaContainerCoil(transferRate);
-		this.transferRate = transferRate;
+		container = new TeslaContainerCoil(tier.getTransferRate());
+		this.tier = tier;
 	}
 	
 	// Overrides
@@ -62,6 +65,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		super.readFromNBT(compound);
 		if(compound.hasKey("Connections")) loadedTiles = deserializeConnections((NBTTagCompound)compound.getTag("Connections"));
 		if(compound.hasKey("TeslaContainer")) container = new TeslaContainerCoil(compound.getTag("TeslaContainer"));
+		if(compound.hasKey("CoilTier")) tier = BlockTeslaCoil.EnumCoilTier.values()[compound.getInteger("CoilTier")];
 		connectedCoils = new ArrayList<ITeslaCoil>();
 	}
 	
@@ -73,6 +77,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 			compound.setTag("Connections", getConnectionNBT());
 		}
 		compound.setTag("TeslaContainer", container.serializeNBT());
+		compound.setInteger("CoilTier", tier.ordinal());
 		return super.writeToNBT(compound);
 	}
 
@@ -289,7 +294,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 					{
 						for(int i = 0; i < connectedConsumers.size() && container.getStoredPower() > 0; i++)
 						{
-							container.takePower(connectedConsumers.get(i).givePower(container.takePower(transferRate, true), false), false);
+							container.takePower(connectedConsumers.get(i).givePower(container.takePower(getTransferRate(), true), false), false);
 						}
 					}
 				}
@@ -328,7 +333,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	public long getTransferRate()
 	{
-		return this.transferRate;
+		return this.tier.getTransferRate();
 	}
 	
 	// Private Methods
