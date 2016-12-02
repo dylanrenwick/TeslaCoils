@@ -56,7 +56,7 @@ public class TESRTeslaCoil extends TileEntitySpecialRenderer<TileEntityTeslaCoil
             
             for(ITeslaCoil tileEntity : te.connectedCoils)
             {
-	            BlockPos destination = new BlockPos(tileEntity.getPos());
+	            BlockPos destination = new BlockPos(tileEntity.getCoilPos());
 	            Vector end = new Vector(destination.getX() + .5f, destination.getY() + .5f, destination.getZ() + .5f);
 	            
 	            int a = 128;

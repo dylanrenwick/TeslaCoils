@@ -314,7 +314,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	}
 	
 	@Override
-	public BlockPos getPos()
+	public BlockPos getCoilPos()
 	{
 		return this.pos;
 	}
@@ -389,7 +389,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		
 		for(int i = 0; i < connectedCoils.size(); i++)
 		{
-			BlockPos connectionPos = connectedCoils.get(i).getPos();
+			BlockPos connectionPos = connectedCoils.get(i).getCoilPos();
 			tag.setLong("Connection" + i, connectionPos.toLong());
 		}
 		

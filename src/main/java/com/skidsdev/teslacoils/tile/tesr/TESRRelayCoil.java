@@ -64,7 +64,7 @@ public class TESRRelayCoil extends TileEntitySpecialRenderer<TileEntityRelayCoil
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
         
-        BlockPos destination = new BlockPos(coil.getPos());
+        BlockPos destination = new BlockPos(coil.getCoilPos());
         Vector end = new Vector(destination.getX() + .5f, destination.getY() + .5f, destination.getZ() + .5f);
         
         int a = 128;

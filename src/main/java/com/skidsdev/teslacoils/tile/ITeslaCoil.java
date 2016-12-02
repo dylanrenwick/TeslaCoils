@@ -49,7 +49,7 @@ public interface ITeslaCoil
 	 * 
 	 * @return The BlockPos of the TileEntity implementing ITeslaCoil
 	 */
-	public BlockPos getPos();
+	public BlockPos getCoilPos();
 	
 	/**
 	 * 
