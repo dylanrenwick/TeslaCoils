@@ -233,6 +233,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	{
 		if (attachedTile == null) return false;
 		IBlockState state = worldObj.getBlockState(pos);
+		if (!state.getProperties().containsKey(BlockTeslaCoil.FACING)) return false;
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.hasCapability(capability, face.getOpposite());
 	}
@@ -242,6 +243,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	{
 		if (attachedTile == null) return null;
 		IBlockState state = worldObj.getBlockState(pos);
+		if (!state.getProperties().containsKey(BlockTeslaCoil.FACING)) return null;
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.getCapability(capability, face.getOpposite());
 	}
