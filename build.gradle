@@ -15,12 +15,12 @@ buildscript {
 apply plugin: 'net.minecraftforge.gradle.forge'
 
 
-version = "0.2.0.1"
+version = "0.2.3.0"
 group= "com.skidsdev.teslacoils"
 archivesBaseName = "teslacoils"
 
 minecraft {
-    version = "1.10.2-12.18.1.2043"
+    version = "1.10.2-12.18.2.2171"
     runDir = "run"
     
     mappings = "snapshot_20160518"
@@ -34,7 +34,7 @@ repositories {
 
 dependencies {
     
-    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.41"
+    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.49"
 }
 
 processResources

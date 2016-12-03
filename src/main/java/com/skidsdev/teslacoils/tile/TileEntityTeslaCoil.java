@@ -30,6 +30,8 @@ import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.energy.CapabilityEnergy;
+import net.minecraftforge.energy.IEnergyStorage;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -113,14 +115,16 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
 		return (capability == TeslaCapabilities.CAPABILITY_CONSUMER ||
-			    capability == TeslaCapabilities.CAPABILITY_HOLDER);
+			    capability == TeslaCapabilities.CAPABILITY_HOLDER ||
+			    capability == CapabilityEnergy.ENERGY);
 	}
 	
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	{
 		if(capability == TeslaCapabilities.CAPABILITY_CONSUMER ||
-		   capability == TeslaCapabilities.CAPABILITY_HOLDER)
+		   capability == TeslaCapabilities.CAPABILITY_HOLDER ||
+		   capability == CapabilityEnergy.ENERGY)
 			return (T) container;
 		
 		return null;
@@ -291,12 +295,27 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 							connectedConsumers.add(coil.getCoilCapability(TeslaCapabilities.CAPABILITY_CONSUMER, this));
 						}
 					}
+					List<IEnergyStorage> connectedEnergy = new ArrayList<IEnergyStorage>();
+					for(ITeslaCoil coil : connectedCoils)
+					{
+						if (coil.hasCoilCapability(CapabilityEnergy.ENERGY, this))
+						{
+							connectedEnergy.add(coil.getCoilCapability(CapabilityEnergy.ENERGY, this));
+						}
+					}
 					
 					if (!connectedConsumers.isEmpty())
 					{
 						for(int i = 0; i < connectedConsumers.size() && container.getStoredPower() > 0; i++)
 						{
 							container.takePower(connectedConsumers.get(i).givePower(container.takePower(getTransferRate(), true), false), false);
+						}
+					}
+					if (!connectedEnergy.isEmpty())
+					{
+						for(int i = 0; i < connectedEnergy.size() && container.getStoredPower() > 0; i++)
+						{
+							container.takePower(connectedEnergy.get(i).receiveEnergy((int)(container.takePower(getTransferRate(), true)), false), false);
 						}
 					}
 				}

@@ -14,6 +14,7 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraftforge.energy.CapabilityEnergy;
 
 import java.util.List;
 
@@ -65,6 +66,7 @@ public class ItemBlockTeslaCoil extends ItemBlock
 		{
 			if (tileEntity.hasCapability(TeslaCapabilities.CAPABILITY_CONSUMER, facing)) return true;
 			if (tileEntity.hasCapability(TeslaCapabilities.CAPABILITY_PRODUCER, facing)) return true;
+			if (tileEntity.hasCapability(CapabilityEnergy.ENERGY, facing)) return true;
 		}
 		
 		return false;

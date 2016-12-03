@@ -6,8 +6,9 @@ import net.darkhax.tesla.api.ITeslaProducer;
 import net.minecraft.nbt.NBTBase;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.common.util.INBTSerializable;
+import net.minecraftforge.energy.IEnergyStorage;
 
-public class TeslaContainerCoil implements ITeslaHolder, ITeslaConsumer, ITeslaProducer, INBTSerializable<NBTTagCompound>
+public class TeslaContainerCoil implements IEnergyStorage, ITeslaHolder, ITeslaConsumer, ITeslaProducer, INBTSerializable<NBTTagCompound>
 {
 	private long capacity;
 	private long storedPower;
@@ -62,5 +63,36 @@ public class TeslaContainerCoil implements ITeslaHolder, ITeslaConsumer, ITeslaP
 	{
 		if (nbt.hasKey("Capacity")) capacity = nbt.getLong("Capacity");
 		if (nbt.hasKey("StoredPower")) storedPower = nbt.getLong("StoredPower");
+	}
+	
+	@Override
+	public int receiveEnergy(int maxReceive, boolean simulate) {
+		return (int)(givePower(maxReceive, simulate));
+	}
+	@Override
+	public int extractEnergy(int maxExtract, boolean simulate) {
+		return (int)(takePower(maxExtract, simulate));
+	}
+	@Override
+	public int getEnergyStored() {
+		if (getStoredPower() > Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		else
+			return (int)(getStoredPower());
+	}
+	@Override
+	public int getMaxEnergyStored() {
+		if (getCapacity() > Integer.MAX_VALUE)
+			return Integer.MAX_VALUE;
+		else
+			return (int)(getCapacity());
+	}
+	@Override
+	public boolean canExtract() {
+		return true;
+	}
+	@Override
+	public boolean canReceive() {
+		return true;
 	}
 }
