@@ -81,6 +81,18 @@ public class BlockTeslaCoil extends BlockBaseCoil
 		return super.onBlockPlaced(worldIn, pos, facing, hitX, hitY, hitZ, meta, placer);
 	}
 	
+	@Override
+	public void onBlockPlacedBy(World worldIn, BlockPos pos, IBlockState state, EntityLivingBase placer, ItemStack stack)
+	{
+		EnumCoilTier tier = EnumCoilTier.values()[ItemNBTHelper.getInt(stack, "CoilTier", 0)];
+		TileEntity te = worldIn.getTileEntity(pos);
+		if (te != null && te instanceof TileEntityTeslaCoil)
+		{
+			TileEntityTeslaCoil coil = (TileEntityTeslaCoil)te;
+			coil.setTier(tier);
+		}
+	}
+	
 	public enum EnumCoilTier implements IStringSerializable
 	{
 		BASIC("basic", Config.teslaCoilTransferRate),

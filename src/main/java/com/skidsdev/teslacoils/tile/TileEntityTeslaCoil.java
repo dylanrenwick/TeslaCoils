@@ -5,10 +5,13 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
+import org.apache.logging.log4j.Level;
+
 import com.skidsdev.teslacoils.Config;
 import com.skidsdev.teslacoils.block.BlockRegister;
 import com.skidsdev.teslacoils.block.BlockTeslaCoil;
 import com.skidsdev.teslacoils.utils.ItemNBTHelper;
+import com.sun.media.jfxmedia.logging.Logger;
 
 import net.darkhax.tesla.api.ITeslaConsumer;
 import net.darkhax.tesla.api.ITeslaHolder;
@@ -32,6 +35,7 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.energy.CapabilityEnergy;
 import net.minecraftforge.energy.IEnergyStorage;
+import net.minecraftforge.fml.common.FMLLog;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
@@ -355,6 +359,17 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public long getTransferRate()
 	{
 		return this.tier.getTransferRate();
+	}
+	
+	public void setTier(BlockTeslaCoil.EnumCoilTier newTier)
+	{
+		if (tier != newTier)
+		{
+			tier = newTier;
+			TeslaContainerCoil newContainer = new TeslaContainerCoil(tier.getTransferRate());
+			newContainer.givePower(container.getStoredPower(), false);
+			container = newContainer;
+		}
 	}
 	
 	// Private Methods
