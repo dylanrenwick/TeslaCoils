@@ -1,13 +1,26 @@
+<<<<<<< HEAD
 buildscript {
     repositories {
         jcenter()
         maven { url = "http://files.minecraftforge.net/maven" }
+=======
+
+// For those who want the bleeding edge
+buildscript {
+    repositories {
+        jcenter()
+        maven {
+            name = "forge"
+            url = "http://files.minecraftforge.net/maven"
+        }
+>>>>>>> origin/master
     }
     dependencies {
         classpath 'net.minecraftforge.gradle:ForgeGradle:2.2-SNAPSHOT'
     }
 }
 apply plugin: 'net.minecraftforge.gradle.forge'
+<<<<<<< HEAD
 //Only edit below this line, the above code adds and enables the necessary things for Forge to be setup.
 
 
@@ -58,6 +71,34 @@ dependencies {
 }
 
 processResources {
+=======
+
+
+version = "0.2.3.0"
+group= "com.skidsdev.teslacoils"
+archivesBaseName = "teslacoils"
+
+minecraft {
+    version = "1.10.2-12.18.2.2171"
+    runDir = "run"
+    
+    mappings = "snapshot_20160518"
+}
+
+repositories {
+    maven {
+        url 'http://maven.epoxide.xyz'
+    }
+}
+
+dependencies {
+    
+    compile "net.darkhax.tesla:Tesla:1.10.2-1.2.1.49"
+}
+
+processResources
+{
+>>>>>>> origin/master
     // this will ensure that this task is redone when the versions change.
     inputs.property "version", project.version
     inputs.property "mcversion", project.minecraft.version
@@ -70,7 +111,11 @@ processResources {
         expand 'version':project.version, 'mcversion':project.minecraft.version
     }
         
+<<<<<<< HEAD
     // copy everything else except the mcmod.info
+=======
+    // copy everything else, thats not the mcmod.info
+>>>>>>> origin/master
     from(sourceSets.main.resources.srcDirs) {
         exclude 'mcmod.info'
     }

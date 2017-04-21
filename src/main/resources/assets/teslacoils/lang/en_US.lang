@@ -1,0 +1,11 @@
+< en_US.lang - English localization file for the mod Tesla Coils >
+tile.teslacoils:blockTeslaCoil_basic.name=Basic Tesla Coil
+tile.teslacoils:blockTeslaCoil_advanced.name=Advanced Tesla Coil
+tile.teslacoils:blockTeslaCoil_industrial.name=Industrial Tesla Coil
+tile.teslacoils:blockTeslaCoil_creative.name=Creative Tesla Coil
+tile.teslacoils:blockRelayCoil.name=Relay Coil
+tile.teslacoils:blockTeslarract_basic.name=Basic Teslarract
+tile.teslacoils:blockTeslarract_advanced.name=Advanced Teslarract
+tile.teslacoils:blockTeslarract_industrial.name=Industrial Teslarract
+tile.teslacoils:blockTeslarract_creative.name=Creative Teslarract
+item.teslacoils:itemTuningTool.name=Tuning Tool
