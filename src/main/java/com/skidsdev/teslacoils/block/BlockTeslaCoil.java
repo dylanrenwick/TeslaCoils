@@ -24,10 +24,13 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.IStringSerializable;
+import net.minecraft.util.NonNullList;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.IBlockAccess;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 public class BlockTeslaCoil extends BlockBaseCoil
 {
@@ -44,9 +47,10 @@ public class BlockTeslaCoil extends BlockBaseCoil
 	{
 		return new TileEntityTeslaCoil(((EnumCoilTier)state.getValue(COIL_TIER)));
 	}
-	
+
+	@SideOnly(Side.CLIENT)
 	@Override
-	public void getSubBlocks(Item item, CreativeTabs tab, List<ItemStack> list)
+	public void getSubBlocks(Item item, CreativeTabs tab, NonNullList<ItemStack> list)
 	{
 		for(EnumCoilTier tier : EnumCoilTier.values())
 		{
@@ -55,7 +59,7 @@ public class BlockTeslaCoil extends BlockBaseCoil
 			list.add(stack);
 		}
 	}
-	
+
 	@Override
 	public IBlockState getActualState(IBlockState state, IBlockAccess worldIn, BlockPos pos)
 	{

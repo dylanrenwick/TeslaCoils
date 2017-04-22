@@ -5,7 +5,6 @@ import com.skidsdev.teslacoils.tile.TileEntityRelayCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslaCoil;
 import com.skidsdev.teslacoils.tile.TileEntityTeslarract;
 
-import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -21,11 +20,9 @@ import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.ITextComponent;
-import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
-import net.minecraftforge.energy.CapabilityEnergy;
 
 public class ItemTuningTool extends Item
 {
@@ -39,44 +36,46 @@ public class ItemTuningTool extends Item
 		this.setUnlocalizedName(this.getRegistryName().toString());
 		this.setCreativeTab(CreativeTabs.TOOLS);
 	}
-	
+
 	@Override
-	public ActionResult<ItemStack> onItemRightClick(ItemStack stack, World worldIn, EntityPlayer player, EnumHand hand)
+	public ActionResult<ItemStack> onItemRightClick(World world, EntityPlayer player, EnumHand hand)
+    {
+        ItemStack stack = player.getHeldItem(hand);
+
+        if (player.isSneaking())
+        {
+            stack.setTagCompound(null);
+        }
+
+        return ActionResult.newResult(EnumActionResult.PASS, stack);
+    }
+
+	public EnumActionResult onItemUseFirst(EntityPlayer player, World world, BlockPos pos, EnumFacing side, float hitX, float hitY, float hitZ, EnumHand hand)
 	{
-		if(player.isSneaking())
-		{
-			stack.setTagCompound(null);
-		}
-		
-		return ActionResult.newResult(EnumActionResult.PASS, stack);
-	}
-	
-	@Override
-	public EnumActionResult onItemUse(ItemStack stack, EntityPlayer player, World worldIn, BlockPos pos, EnumHand hand, EnumFacing facing, float hitX, float hitY, float hitZ)
-	{
-		IBlockState state = worldIn.getBlockState(pos);
+	    ItemStack stack = player.getHeldItem(hand);
+		IBlockState state = world.getBlockState(pos);
 		Block type = state.getBlock();
-		TileEntity tentity = worldIn.getTileEntity(pos);
-		
+		TileEntity tentity = world.getTileEntity(pos); // UNUSED???
+
 		if (type == BlockRegister.blockTeslaCoil)
 		{
-			TileEntity tileEntity = worldIn.getTileEntity(pos);
-			
-			TileEntityTeslaCoil coilEntity = (TileEntityTeslaCoil)tileEntity;
+			TileEntity tileEntity = world.getTileEntity(pos);
+
+			TileEntityTeslaCoil coilEntity = (TileEntityTeslaCoil) tileEntity;
 			coilEntity.onTuningToolUse(player, stack);
 		}
 		else if (type == BlockRegister.blockRelayCoil)
 		{
-			TileEntity tileEntity = worldIn.getTileEntity(pos);
-			
-			TileEntityRelayCoil coilEntity = (TileEntityRelayCoil)tileEntity;
+			TileEntity tileEntity = world.getTileEntity(pos);
+
+			TileEntityRelayCoil coilEntity = (TileEntityRelayCoil) tileEntity;
 			coilEntity.onTuningToolUse(player, stack);
 		}
 		else if (type == BlockRegister.blockTeslarract)
 		{
-			TileEntity tileEntity = worldIn.getTileEntity(pos);
-			
-			TileEntityTeslarract coilEntity = (TileEntityTeslarract)tileEntity;
+			TileEntity tileEntity = world.getTileEntity(pos);
+
+			TileEntityTeslarract coilEntity = (TileEntityTeslarract) tileEntity;
 			coilEntity.onTuningToolUse(player, stack);
 		}
 /*		else if (tentity != null)
@@ -94,16 +93,16 @@ public class ItemTuningTool extends Item
 		}*/
 		else
 		{
-			this.onItemRightClick(stack, worldIn, player, hand);
+			this.onItemRightClick(world, player, hand);
 		}
-		
+
 		return EnumActionResult.PASS;
 	}
 	
 	// Static Methods
 	
     @SideOnly(Side.CLIENT)
-    private static void sendSpamlessMessage (int messageID, ITextComponent message)
+    private static void sendSpamlessMessage(int messageID, ITextComponent message)
     {        
         final GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
         chat.printChatMessageWithOptionalDeletion(message, messageID);

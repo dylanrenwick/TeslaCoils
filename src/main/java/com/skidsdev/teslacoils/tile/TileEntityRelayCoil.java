@@ -42,7 +42,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 			if (tag != null)
 			{
 				int dimID = tag.getInteger("world");
-				if (dimID != worldObj.provider.getDimension()) return;
+				if (dimID != world.provider.getDimension()) return;
 				
 				int type = tag.getInteger("coiltype");
 				if (type == 2) return;
@@ -76,7 +76,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				TileEntity newConnection = this.worldObj.getTileEntity(new BlockPos(x, y, z));
+				TileEntity newConnection = this.world.getTileEntity(new BlockPos(x, y, z));
 				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
 				{
 					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
@@ -115,7 +115,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 				tag.setInteger("x", this.pos.getX());
 				tag.setInteger("y", this.pos.getY());
 				tag.setInteger("z", this.pos.getZ());
-				tag.setInteger("world", worldObj.provider.getDimension());
+				tag.setInteger("world", world.provider.getDimension());
 				tag.setInteger("coiltype", 3);
 				
 				ItemNBTHelper.setCompound(stack, "StartPos", tag);
@@ -255,7 +255,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		{
 			if (firstConnection == null)
 			{
-				TileEntity tileEntity = worldObj.getTileEntity(firstPos);
+				TileEntity tileEntity = world.getTileEntity(firstPos);
 				if (tileEntity != null && tileEntity instanceof ITeslaCoil)
 				{
 					firstConnection = (ITeslaCoil)tileEntity;
@@ -267,7 +267,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		{
 			if (secondConnection == null)
 			{
-				TileEntity tileEntity = worldObj.getTileEntity(secondPos);
+				TileEntity tileEntity = world.getTileEntity(secondPos);
 				if (tileEntity != null && tileEntity instanceof ITeslaCoil)
 				{
 					secondConnection = (ITeslaCoil)tileEntity;
@@ -294,7 +294,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	
 	private void throwToolNBTError(EntityPlayer player, String details)
 	{
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
 	}
 	

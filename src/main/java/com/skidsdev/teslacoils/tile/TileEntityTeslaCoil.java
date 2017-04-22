@@ -5,8 +5,6 @@ import java.util.List;
 
 import javax.annotation.Nullable;
 
-import org.apache.logging.log4j.Level;
-
 import com.skidsdev.teslacoils.Config;
 import com.skidsdev.teslacoils.block.BlockRegister;
 import com.skidsdev.teslacoils.block.BlockTeslaCoil;
@@ -144,7 +142,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 			if (tag != null)
 			{
 				int dimID = tag.getInteger("world");
-				if (dimID != worldObj.provider.getDimension()) return;
+				if (dimID != world.provider.getDimension()) return;
 				
 				int type = tag.getInteger("coiltype");
 				if (type == 2) return;
@@ -178,7 +176,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				TileEntity newConnection = this.worldObj.getTileEntity(new BlockPos(x, y, z));
+				TileEntity newConnection = this.world.getTileEntity(new BlockPos(x, y, z));
 				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
 				{
 					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
@@ -204,7 +202,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 				tag.setInteger("x", this.pos.getX());
 				tag.setInteger("y", this.pos.getY());
 				tag.setInteger("z", this.pos.getZ());
-				tag.setInteger("world", worldObj.provider.getDimension());
+				tag.setInteger("world", world.provider.getDimension());
 				tag.setInteger("coiltype", 1);
 				
 				ItemNBTHelper.setCompound(stack, "StartPos", tag);
@@ -240,7 +238,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public boolean hasCoilCapability(Capability<?> capability, ITeslaCoil requester)
 	{
 		if (attachedTile == null) return false;
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		if (!state.getProperties().containsKey(BlockTeslaCoil.FACING)) return false;
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.hasCapability(capability, face.getOpposite());
@@ -250,7 +248,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	public <T> T getCoilCapability(Capability<T> capability, ITeslaCoil requester)
 	{
 		if (attachedTile == null) return null;
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		if (!state.getProperties().containsKey(BlockTeslaCoil.FACING)) return null;
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.getCapability(capability, face.getOpposite());
@@ -267,7 +265,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	{
 		if(isInvalid()) return false;
 		
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		
 		if(state.getBlock() != BlockRegister.blockTeslaCoil) return false;
 		
@@ -330,7 +328,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 				
 				for(BlockPos loadedPos : loadedTiles)
 				{
-					TileEntity tileEntity = worldObj.getTileEntity(loadedPos);
+					TileEntity tileEntity = world.getTileEntity(loadedPos);
 					
 					if (tileEntity != null && tileEntity instanceof ITeslaCoil)
 					{
@@ -403,12 +401,12 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	private void getAttachedTile()
 	{
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		if (state.getBlock() != BlockRegister.blockTeslaCoil) return;
 		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 		BlockPos attachedPos = pos.offset(facing);
 		
-		TileEntity te = worldObj.getTileEntity(attachedPos);
+		TileEntity te = world.getTileEntity(attachedPos);
 		
 		if (te != null && !te.isInvalid()) attachedTile = te;
 	}
@@ -456,7 +454,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	private void throwToolNBTError(EntityPlayer player, String details)
 	{
-		if (worldObj.isRemote)
+		if (world.isRemote)
 			sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
 	}
 	

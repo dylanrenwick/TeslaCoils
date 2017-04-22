@@ -37,7 +37,7 @@ public class TESRTeslaCoil extends TileEntitySpecialRenderer<TileEntityTeslaCoil
             GlStateManager.disableCull();
 
             Minecraft mc = Minecraft.getMinecraft();
-            EntityPlayerSP p = mc.thePlayer;
+            EntityPlayerSP p = mc.player;
             double doubleX = p.lastTickPosX + (p.posX - p.lastTickPosX);
             double doubleY = p.lastTickPosY + (p.posY - p.lastTickPosY);
             double doubleZ = p.lastTickPosZ + (p.posZ - p.lastTickPosZ);

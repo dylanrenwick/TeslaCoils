@@ -46,9 +46,9 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 				int y = tag.getInteger("y");
 				int z = tag.getInteger("z");
 				
-				TileEntityTeslarract newConnection = (TileEntityTeslarract)this.worldObj.getTileEntity(new BlockPos(x, y, z));
+				TileEntityTeslarract newConnection = (TileEntityTeslarract) world.getTileEntity(new BlockPos(x, y, z));
 				
-				this.connectedTiles.add(newConnection);
+				connectedTiles.add(newConnection);
 				newConnection.addConnectedTile(this);
 				
 				stack.setTagCompound(null);
@@ -57,9 +57,9 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 			{
 				tag = new NBTTagCompound();
 				
-				tag.setInteger("x", this.pos.getX());
-				tag.setInteger("y", this.pos.getY());
-				tag.setInteger("z", this.pos.getZ());
+				tag.setInteger("x", pos.getX());
+				tag.setInteger("y", pos.getY());
+				tag.setInteger("z", pos.getZ());
 				tag.setInteger("coiltype", 0);
 				
 				ItemNBTHelper.setCompound(stack, "StartPos", tag);
@@ -67,19 +67,19 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 		}
 		else
 		{
-			if (connectedTiles != null) this.clearConnections();
+			if (connectedTiles != null) clearConnections();
 		}
 	}
 	
 	public void addConnectedTile(TileEntityTeslarract tileEntity)
 	{
-		if(this.connectedTiles != null && !this.connectedTiles.contains(tileEntity)) this.connectedTiles.add(tileEntity);
+		if(connectedTiles != null && !connectedTiles.contains(tileEntity)) connectedTiles.add(tileEntity);
 	}
 	
 	@Override
 	public boolean hasCapability(Capability<?> capability, EnumFacing facing)
 	{
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.hasCapability(capability, face.getOpposite());
 	}
@@ -87,7 +87,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 	@Override
 	public <T> T getCapability(Capability<T> capability, EnumFacing facing)
 	{
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		EnumFacing face = state.getValue(BlockTeslaCoil.FACING);
 		return attachedTile.getCapability(capability, face.getOpposite());
 	}
@@ -102,7 +102,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 		
 		if (connectedTiles != null)
 		{
-			IBlockState state = worldObj.getBlockState(pos);
+			IBlockState state = world.getBlockState(pos);
 			EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 			
 			ITeslaHolder holder = attachedTile.getCapability(TeslaCapabilities.CAPABILITY_HOLDER, facing.getOpposite()); 
@@ -126,10 +126,10 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 	
 	public void updateBlock()
 	{
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 		BlockPos attachedPos = pos.offset(facing);
-		this.worldObj.markBlockRangeForRenderUpdate(pos, attachedPos);
+		this.world.markBlockRangeForRenderUpdate(pos, attachedPos);
 	}
 	
 	public void disconnect(TileEntityTeslarract tileEntity)
@@ -144,11 +144,11 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 	
 	private void getAttachedTile()
 	{
-		IBlockState state = worldObj.getBlockState(pos);
+		IBlockState state = world.getBlockState(pos);
 		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 		BlockPos attachedPos = pos.offset(facing);
 		
-		TileEntity te = worldObj.getTileEntity(attachedPos);
+		TileEntity te = world.getTileEntity(attachedPos);
 		
 		if (te != null) attachedTile = te;
 	}
