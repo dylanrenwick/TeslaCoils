@@ -38,10 +38,18 @@ public abstract class BlockBaseCoil extends Block
 		return new BlockStateContainer(this, FACING);
 	}
 
+	@Override
+	@SuppressWarnings("deprecation")
+	public IBlockState getStateForPlacement(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
+	{
+		return getDefaultState().withProperty(FACING, facing.getOpposite());
+	}
+
+	/* Might need to be fixed and updated later, but currently unused
 	public IBlockState onBlockPlaced(World worldIn, BlockPos pos, EnumFacing facing, float hitX, float hitY, float hitZ, int meta, EntityLivingBase placer)
 	{
 		return getStateFromMeta(meta).withProperty(FACING, facing.getOpposite());
-	}
+	}*/
 	
 	@Override
 	public AxisAlignedBB getBoundingBox(IBlockState state, IBlockAccess worldIn, BlockPos pos)
