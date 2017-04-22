@@ -129,7 +129,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 		IBlockState state = world.getBlockState(pos);
 		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 		BlockPos attachedPos = pos.offset(facing);
-		this.world.markBlockRangeForRenderUpdate(pos, attachedPos);
+		world.markBlockRangeForRenderUpdate(pos, attachedPos);
 	}
 	
 	public void disconnect(TileEntityTeslarract tileEntity)

@@ -25,11 +25,11 @@ public abstract class BlockBaseCoil extends Block
 	public BlockBaseCoil(String regName)
 	{
 		super(Material.IRON);
-		this.setRegistryName(regName);
-		this.setUnlocalizedName(this.getRegistryName().toString());
-		this.setHardness(1.5f);
-		this.setResistance(10.0f);
-		this.setCreativeTab(CreativeTabs.REDSTONE);
+		setRegistryName(regName);
+		setUnlocalizedName(this.getRegistryName().toString());
+		setHardness(1.5f);
+		setResistance(10.0f);
+		setCreativeTab(CreativeTabs.REDSTONE);
 	}
 	
 	@Override
@@ -128,7 +128,7 @@ public abstract class BlockBaseCoil extends Block
 		
 		facing = EnumFacing.values()[meta];
 		
-		return this.getDefaultState().withProperty(FACING, facing);
+		return getDefaultState().withProperty(FACING, facing);
 	}
 	
 	@Override

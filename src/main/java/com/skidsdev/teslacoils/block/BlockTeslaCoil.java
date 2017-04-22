@@ -39,7 +39,7 @@ public class BlockTeslaCoil extends BlockBaseCoil
 	public BlockTeslaCoil()
 	{
 		super("blockTeslaCoil");
-		this.setDefaultState(blockState.getBaseState().withProperty(COIL_TIER, EnumCoilTier.BASIC));
+		setDefaultState(blockState.getBaseState().withProperty(COIL_TIER, EnumCoilTier.BASIC));
 	}
 	
 	@Override

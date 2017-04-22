@@ -25,12 +25,15 @@ import net.minecraftforge.fml.relauncher.SideOnly;
 public class TileEntityRelayCoil extends TileEntity implements ITickable, ITeslaCoil
 {
 	private static final int CHAT_ID = 47201174;
-	
+
 	public ITeslaCoil firstConnection;
 	public ITeslaCoil secondConnection;
 	
 	private BlockPos firstPos;
 	private BlockPos secondPos;
+
+	public TileEntityRelayCoil()
+    {}
 	
 	@Override
 	public void onTuningToolUse(EntityPlayer player, ItemStack stack)
@@ -76,7 +79,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				TileEntity newConnection = this.world.getTileEntity(new BlockPos(x, y, z));
+				TileEntity newConnection = world.getTileEntity(new BlockPos(x, y, z));
 				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
 				{
 					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
@@ -104,7 +107,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				this.markDirty();
+				markDirty();
 				
 				stack.setTagCompound(null);
 			}
@@ -112,9 +115,9 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 			{
 				tag = new NBTTagCompound();
 				
-				tag.setInteger("x", this.pos.getX());
-				tag.setInteger("y", this.pos.getY());
-				tag.setInteger("z", this.pos.getZ());
+				tag.setInteger("x", pos.getX());
+				tag.setInteger("y", pos.getY());
+				tag.setInteger("z", pos.getZ());
 				tag.setInteger("world", world.provider.getDimension());
 				tag.setInteger("coiltype", 3);
 				
@@ -125,7 +128,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		{
 			if (firstConnection  != null) disconnect(firstConnection);
 			if (secondConnection != null) disconnect(secondConnection);
-			this.markDirty();
+			markDirty();
 		}
 	}
 	
@@ -137,7 +140,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT (NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
 		compound.setTag("Connections", getConnectionNBT());
 		return super.writeToNBT(compound);
@@ -161,14 +164,14 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
 	{
-	    return new SPacketUpdateTileEntity(this.pos, 0, getUpdateTag());
+	    return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
 	{
 	    super.onDataPacket(net, packet);
-	    this.readFromNBT(packet.getNbtCompound());
+	    readFromNBT(packet.getNbtCompound());
 	}
 
 	@Override
@@ -178,13 +181,13 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		{
 			firstConnection = null;
 			coil.disconnect(this);
-			this.markDirty();
+			markDirty();
 		}
 		else if (secondConnection == coil)
 		{
 			secondConnection = null;
 			coil.disconnect(this);
-			this.markDirty();
+			markDirty();
 		}
 	}
 
@@ -193,7 +196,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	{
 		if (firstConnection == null) firstConnection = coil;
 		else if (secondConnection == null) secondConnection = coil;
-		this.markDirty();
+		markDirty();
 	}
 
 	@Override
@@ -221,7 +224,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public boolean validateCoil()
 	{
-		return true;
+		return true; // ???
 	}
 	
 	private NBTTagCompound getConnectionNBT()
@@ -289,7 +292,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public BlockPos getCoilPos()
 	{
-		return this.pos;
+		return pos;
 	}
 	
 	private void throwToolNBTError(EntityPlayer player, String details)
@@ -301,7 +304,7 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 	// Static Methods
 	
     @SideOnly(Side.CLIENT)
-    private static void sendSpamlessMessage (int messageID, ITextComponent message)
+    private static void sendSpamlessMessage(int messageID, ITextComponent message)
     {        
         final GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
         chat.printChatMessageWithOptionalDeletion(message, messageID);

@@ -14,10 +14,10 @@ public class CommonProxy
 	
 	public void preInit(FMLPreInitializationEvent e)
 	{		
-		this.modConfig = new Config(e.getSuggestedConfigurationFile());
+		modConfig = new Config(e.getSuggestedConfigurationFile());
 		
-		this.modConfig.setupItems();
-		this.modConfig.setupBlocks();
+		modConfig.setupItems();
+		modConfig.setupBlocks();
 		
 		GameRegistry.registerTileEntity(TileEntityTeslaCoil.class, "teslacoil");
 		GameRegistry.registerTileEntity(TileEntityRelayCoil.class, "relaycoil");
@@ -25,7 +25,7 @@ public class CommonProxy
 	
 	public void init(FMLInitializationEvent e)
 	{
-		this.modConfig.setupCrafting();
+		modConfig.setupCrafting();
 	}
 	
 	public void postInit(FMLPostInitializationEvent e)

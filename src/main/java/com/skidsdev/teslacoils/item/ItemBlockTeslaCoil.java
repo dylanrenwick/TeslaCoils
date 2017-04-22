@@ -23,8 +23,8 @@ public class ItemBlockTeslaCoil extends ItemBlock
 	public ItemBlockTeslaCoil(Block block)
 	{
 		super(block);
-		this.setMaxDamage(0);
-		this.setRegistryName(block.getRegistryName().toString());
+		setMaxDamage(0);
+		setRegistryName(block.getRegistryName().toString());
 	}
 	
 	@Override

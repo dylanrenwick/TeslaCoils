@@ -60,7 +60,7 @@ public class TESRRelayCoil extends TileEntitySpecialRenderer<TileEntityRelayCoil
         Tessellator tessellator = Tessellator.getInstance();
         VertexBuffer buffer = tessellator.getBuffer();
 
-        this.bindTexture(laser);
+        bindTexture(laser);
 
         buffer.begin(GL11.GL_QUADS, DefaultVertexFormats.POSITION_TEX_LMAP_COLOR);
         

@@ -32,9 +32,9 @@ public class ItemTuningTool extends Item
 	{
 		super();
 		
-		this.setRegistryName("itemTuningTool");
-		this.setUnlocalizedName(this.getRegistryName().toString());
-		this.setCreativeTab(CreativeTabs.TOOLS);
+		setRegistryName("itemTuningTool");
+		setUnlocalizedName(this.getRegistryName().toString());
+		setCreativeTab(CreativeTabs.TOOLS);
 	}
 
 	@Override
@@ -93,7 +93,7 @@ public class ItemTuningTool extends Item
 		}*/
 		else
 		{
-			this.onItemRightClick(world, player, hand);
+			onItemRightClick(world, player, hand);
 		}
 
 		return EnumActionResult.PASS;

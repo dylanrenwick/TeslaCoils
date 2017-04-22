@@ -56,7 +56,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	
 	public TileEntityTeslaCoil(BlockTeslaCoil.EnumCoilTier tier)
 	{
-		connectedCoils = new ArrayList<ITeslaCoil>();
+	    connectedCoils = new ArrayList<ITeslaCoil>();
 		container = new TeslaContainerCoil(tier.getTransferRate());
 		this.tier = tier;
 	}
@@ -66,15 +66,15 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public void readFromNBT(NBTTagCompound compound)
 	{
-		super.readFromNBT(compound);
 		if(compound.hasKey("Connections")) loadedTiles = deserializeConnections((NBTTagCompound)compound.getTag("Connections"));
 		if(compound.hasKey("TeslaContainer")) container = new TeslaContainerCoil(compound.getTag("TeslaContainer"));
 		if(compound.hasKey("CoilTier")) tier = BlockTeslaCoil.EnumCoilTier.values()[compound.getInteger("CoilTier")];
 		connectedCoils = new ArrayList<ITeslaCoil>();
+		super.readFromNBT(compound);
 	}
 	
 	@Override
-	public NBTTagCompound writeToNBT (NBTTagCompound compound)
+	public NBTTagCompound writeToNBT(NBTTagCompound compound)
 	{
 		if (connectedCoils != null && !connectedCoils.isEmpty())
 		{
@@ -103,14 +103,14 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public SPacketUpdateTileEntity getUpdatePacket()
 	{
-	    return new SPacketUpdateTileEntity(this.pos, 0, getUpdateTag());
+	    return new SPacketUpdateTileEntity(pos, 0, getUpdateTag());
 	}
 	
 	@Override
 	public void onDataPacket(NetworkManager net, SPacketUpdateTileEntity packet)
 	{
 	    super.onDataPacket(net, packet);
-	    this.readFromNBT(packet.getNbtCompound());
+	    readFromNBT(packet.getNbtCompound());
 	}
 	
 	@Override
@@ -176,7 +176,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				TileEntity newConnection = this.world.getTileEntity(new BlockPos(x, y, z));
+				TileEntity newConnection = world.getTileEntity(new BlockPos(x, y, z));
 				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
 				{
 					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
@@ -188,10 +188,10 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 					return;
 				}
 				
-				this.connectedCoils.add((ITeslaCoil)newConnection);
+				connectedCoils.add((ITeslaCoil)newConnection);
 				((ITeslaCoil)newConnection).addConnectedTile(this);
 				
-				this.markDirty();
+				markDirty();
 				
 				stack.setTagCompound(null);
 			}
@@ -199,9 +199,9 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 			{
 				tag = new NBTTagCompound();
 				
-				tag.setInteger("x", this.pos.getX());
-				tag.setInteger("y", this.pos.getY());
-				tag.setInteger("z", this.pos.getZ());
+				tag.setInteger("x", pos.getX());
+				tag.setInteger("y", pos.getY());
+				tag.setInteger("z", pos.getZ());
 				tag.setInteger("world", world.provider.getDimension());
 				tag.setInteger("coiltype", 1);
 				
@@ -210,7 +210,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		}
 		else
 		{
-			if (connectedCoils != null) this.clearConnections();
+			if (connectedCoils != null) clearConnections();
 		}
 	}
 
@@ -220,17 +220,17 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		if (connectedCoils.contains(coil))
 		{
 			connectedCoils.remove(coil);
-			this.markDirty();
+			markDirty();
 		}
 	}
 
 	@Override
 	public void addConnectedTile(ITeslaCoil coil)
 	{
-		if(this.connectedCoils != null && !this.connectedCoils.contains(coil))
+		if(connectedCoils != null && !connectedCoils.contains(coil))
 		{
 			connectedCoils.add(coil);
-			this.markDirty();
+			markDirty();
 		}
 	}
 
@@ -269,7 +269,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		
 		if(state.getBlock() != BlockRegister.blockTeslaCoil) return false;
 		
-		if(!this.hasValidAttachedTile()) return false;
+		if(!hasValidAttachedTile()) return false;
 		
 		return true;
 	}
@@ -277,7 +277,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public void update()
 	{
-		if(this.attachedTile == null || this.attachedTile.isInvalid())
+		if(attachedTile == null || attachedTile.isInvalid())
 		{
 			getAttachedTile();
 		}
@@ -344,19 +344,19 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 	@Override
 	public BlockPos getCoilPos()
 	{
-		return this.pos;
+		return pos;
 	}
 	
 	// Public Methods
 	
 	public void destroyTile()
 	{
-		this.clearConnections();
+		clearConnections();
 	}
 	
 	public long getTransferRate()
 	{
-		return this.tier.getTransferRate();
+		return tier.getTransferRate();
 	}
 	
 	public void setTier(BlockTeslaCoil.EnumCoilTier newTier)
@@ -382,7 +382,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		{
 			if(!coil.validateCoil())
 			{
-				this.disconnect(coil);
+				disconnect(coil);
 				coil.disconnect(this);
 			}
 		}
@@ -418,7 +418,7 @@ public class TileEntityTeslaCoil extends TileEntity implements ITickable, ITesla
 		for(ITeslaCoil connectedCoil : temp)
 		{
 			connectedCoil.disconnect(this);
-			this.disconnect(connectedCoil);
+			disconnect(connectedCoil);
 		}
 	}
 	
