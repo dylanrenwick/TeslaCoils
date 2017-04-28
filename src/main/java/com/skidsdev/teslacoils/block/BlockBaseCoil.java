@@ -56,7 +56,7 @@ public abstract class BlockBaseCoil extends Block
 	{
 		EnumFacing facing = state.getValue(FACING);
 		
-		double pixelInc = 1.0 / 16.0;
+		final double pixelInc = 1.0 / 16.0;
 		
 		double startX = 0;
 		double startY = 0;
