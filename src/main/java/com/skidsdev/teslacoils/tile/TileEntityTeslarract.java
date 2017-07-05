@@ -12,6 +12,8 @@ import net.darkhax.tesla.api.ITeslaHolder;
 import net.darkhax.tesla.api.ITeslaProducer;
 import net.darkhax.tesla.capability.TeslaCapabilities;
 import net.minecraft.block.state.IBlockState;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiNewChat;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
@@ -19,21 +21,107 @@ import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.ITickable;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.text.ITextComponent;
+import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.common.capabilities.Capability;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
-public class TileEntityTeslarract extends TileEntity implements ITickable
+public class TileEntityTeslarract extends TileEntity implements ITickable, ITeslaCoil
 {
-	public List<TileEntityTeslarract> connectedTiles;
+    private static final int CHAT_ID = 47201175;
+
+    private final long transferRate = Config.teslaCoilTransferRate * 32;
+
+	public List<ITeslaCoil> connectedCoils;
 	public TileEntity attachedTile;
 	
 	public TileEntityTeslarract()
 	{
-		connectedTiles = new ArrayList<TileEntityTeslarract>();
+        connectedCoils = new ArrayList<ITeslaCoil>();
 	}
 	
 	public void onTuningToolUse(EntityPlayer player, ItemStack stack)
 	{
 		if (!player.isSneaking())
+		{
+			NBTTagCompound tag = ItemNBTHelper.getCompound(stack, "StartPos", true);
+
+			if (tag != null)
+			{
+				int dimID = tag.getInteger("world");
+				if (dimID != world.provider.getDimension()) return;
+
+				int type = tag.getInteger("coiltype");
+				if (type == 2) return;
+				if (type == 0)
+				{
+					throwToolNBTError(player, "Invalid coiltype NBT tag in Tuning Tool, connection not formed!");
+					return;
+				}
+
+				int x = tag.getInteger("x");
+				int xDif = pos.getX() - x;
+				if (xDif > 16 || xDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
+
+				int y = tag.getInteger("y");
+				int yDif = pos.getY() - y;
+				if (yDif > 16 || yDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
+
+				int z = tag.getInteger("z");
+				int zDif = pos.getZ() - z;
+				if (zDif > 16 || zDif < -16)
+				{
+					throwToolNBTError(player, "Out of range!");
+					return;
+				}
+
+				TileEntity newConnection = world.getTileEntity(new BlockPos(x, y, z));
+				if (newConnection == null && !(newConnection instanceof ITeslaCoil))
+				{
+					throwToolNBTError(player, "No Tesla Coil TileEntity found to connect to, connection not formed!");
+					return;
+				}
+				if (newConnection == this)
+				{
+					throwToolNBTError(player, "You can't connect a Tesla Coil to itself!");
+					return;
+				}
+
+				connectedCoils.add((ITeslaCoil)newConnection);
+				((ITeslaCoil)newConnection).addConnectedTile(this);
+
+				markDirty();
+
+				stack.setTagCompound(null);
+			}
+			else
+			{
+				tag = new NBTTagCompound();
+
+				tag.setInteger("x", pos.getX());
+				tag.setInteger("y", pos.getY());
+				tag.setInteger("z", pos.getZ());
+				tag.setInteger("world", world.provider.getDimension());
+				tag.setInteger("coiltype", 1);
+
+				ItemNBTHelper.setCompound(stack, "StartPos", tag);
+			}
+		}
+		else
+		{
+			if (connectedCoils != null) clearConnections();
+		}
+
+		/*if (!player.isSneaking())
 		{
 			NBTTagCompound tag = ItemNBTHelper.getCompound(stack, "StartPos", true);
 			
@@ -48,7 +136,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 				
 				TileEntityTeslarract newConnection = (TileEntityTeslarract) world.getTileEntity(new BlockPos(x, y, z));
 				
-				connectedTiles.add(newConnection);
+				connectedCoils.add(newConnection);
 				newConnection.addConnectedTile(this);
 				
 				stack.setTagCompound(null);
@@ -67,13 +155,59 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 		}
 		else
 		{
-			if (connectedTiles != null) clearConnections();
-		}
+			if (connectedCoils != null) clearConnections();
+		}*/
 	}
-	
-	public void addConnectedTile(TileEntityTeslarract tileEntity)
+
+    @Override
+    public void disconnect(ITeslaCoil coil)
+    {
+        if (connectedCoils.contains(coil))
+        {
+            connectedCoils.remove(coil);
+            markDirty();
+        }
+    }
+
+    @Override
+    public void addConnectedTile(ITeslaCoil coil)
+    {
+
+    }
+
+    @Override
+    public boolean hasCoilCapability(Capability<?> capability, ITeslaCoil requester)
+    {
+        return false;
+    }
+
+    @Override
+    public <T> T getCoilCapability(Capability<T> capability, ITeslaCoil requester)
+    {
+        return null;
+    }
+
+    @Override
+    public BlockPos getCoilPos()
+    {
+        return null;
+    }
+
+    @Override
+    public TileEntity getTileEntity()
+    {
+        return null;
+    }
+
+    @Override
+    public boolean validateCoil()
+    {
+        return false;
+    }
+
+    public void addConnectedTile(TileEntityTeslarract tileEntity)
 	{
-		if(connectedTiles != null && !connectedTiles.contains(tileEntity)) connectedTiles.add(tileEntity);
+		if(connectedCoils != null && !connectedCoils.contains(tileEntity)) connectedCoils.add(tileEntity);
 	}
 	
 	@Override
@@ -100,7 +234,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 			getAttachedTile();
 		}
 		
-		if (connectedTiles != null)
+		if (connectedCoils != null)
 		{
 			IBlockState state = world.getBlockState(pos);
 			EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
@@ -118,9 +252,7 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 				{
 					producer.takePower(consumer.givePower(producer.takePower(Config.teslaCoilTransferRate, true), false), false);
 				}
-				
-				updateConnectedBlocks();
-			}
+            }
 		}
 	}
 	
@@ -130,11 +262,6 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 		EnumFacing facing = state.getValue(BlockTeslaCoil.FACING);
 		BlockPos attachedPos = pos.offset(facing);
 		world.markBlockRangeForRenderUpdate(pos, attachedPos);
-	}
-	
-	public void disconnect(TileEntityTeslarract tileEntity)
-	{
-		if (connectedTiles.contains(tileEntity)) connectedTiles.remove(tileEntity);
 	}
 	
 	public void destroyTile()
@@ -155,46 +282,58 @@ public class TileEntityTeslarract extends TileEntity implements ITickable
 	
 	private boolean hasConnectedCapability(Capability<?> capability)
 	{		
-		for(TileEntityTeslarract tileEntity : connectedTiles)
+		for(ITeslaCoil coil : connectedCoils)
 		{
-			if (tileEntity.hasCapability(capability, null)) return true;
+			if (coil.hasCoilCapability(capability, null)) return true;
 		}
 		
 		return false;
 	}
+
 	private <T> List<T> getConnectedCapabilities(Capability<T> capability)
 	{
 		List<T> connectedCaps = new ArrayList<T>();
 		
-		for(TileEntityTeslarract tileEntity : connectedTiles)
+		for(ITeslaCoil coil : connectedCoils)
 		{
-			if (tileEntity.hasCapability(capability, null))
+			if (coil.hasCoilCapability(capability, null))
 			{
-				connectedCaps.add(tileEntity.getCapability(capability, null));
+				connectedCaps.add(coil.getCoilCapability(capability, null));
 			}
 		}
 		
 		return connectedCaps;
 	}
-	private void updateConnectedBlocks()
+
+	private void terminateConnection(ITeslaCoil coil)
 	{
-		for(TileEntityTeslarract tileEntity : connectedTiles)
-		{
-			tileEntity.updateBlock();
-		}
+		if (connectedCoils.contains(coil)) connectedCoils.remove(coil);
+		coil.disconnect(this);
 	}
-	private void terminateConnection(TileEntityTeslarract tileEntity)
-	{
-		if (connectedTiles.contains(tileEntity)) connectedTiles.remove(tileEntity);
-		tileEntity.disconnect(this);
-	}
+
 	private void clearConnections()
 	{
-		List<TileEntityTeslarract> temp = new ArrayList<TileEntityTeslarract>(connectedTiles);
+		List<ITeslaCoil> temp = new ArrayList<ITeslaCoil>(connectedCoils);
 		
-		for(TileEntityTeslarract tileEntity : temp)
+		for(ITeslaCoil coil : temp)
 		{
-			terminateConnection(tileEntity);
+			terminateConnection(coil);
 		}
+	}
+
+	private void throwToolNBTError(EntityPlayer player, String details)
+	{
+		if (world.isRemote)
+			sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
+	}
+
+	// Static Methods
+	// Audiatorix: I really want to factor this shit out. Any reason we can't?
+
+	@SideOnly(Side.CLIENT)
+	private static void sendSpamlessMessage(int messageID, ITextComponent message)
+	{
+		final GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
+		chat.printChatMessageWithOptionalDeletion(message, messageID);
 	}
 }

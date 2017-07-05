@@ -300,12 +300,13 @@ public class TileEntityRelayCoil extends TileEntity implements ITickable, ITesla
 		if (world.isRemote)
 			sendSpamlessMessage(CHAT_ID, new TextComponentString(details));
 	}
-	
+
 	// Static Methods
-	
+	// Audiatorix: I really want to factor this shit out. Any reason we can't?
+
     @SideOnly(Side.CLIENT)
     private static void sendSpamlessMessage(int messageID, ITextComponent message)
-    {        
+    {
         final GuiNewChat chat = Minecraft.getMinecraft().ingameGUI.getChatGUI();
         chat.printChatMessageWithOptionalDeletion(message, messageID);
     }
